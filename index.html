@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPES de Hesbaye - 4TT - Mathématiques (5H) - LIBOY D. </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* NOUVEAU FOND MATHÉMATIQUES (Grille à points) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e5e5f7;
+            background-image: radial-gradient(#4a90e2 1px, transparent 1px);
+            background-size: 20px 20px;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* NOUVEAU FOND POUR L'EN-TÊTE AVEC IMAGE FIXE */
+        .header {
+            background: linear-gradient(rgba(0, 57, 115, 0.7), rgba(0, 57, 115, 0.8)), url('Gemini_Generated_Image_olo1pjolo1pjolo1.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+            border-radius: 20px 20px 0 0;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .uaa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .uaa-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .uaa-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--card-color);
+        }
+
+        .uaa-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--card-color);
+        }
+
+        .uaa-card.uaa1 { --card-color: #ff6b6b; }
+        .uaa-card.uaa2 { --card-color: #4ecdc4; }
+        .uaa-card.uaa3 { --card-color: #45b7d1; }
+        .uaa-card.uaa4 { --card-color: #f9ca24; }
+        .uaa-card.uaa5 { --card-color: #6c5ce7; }
+        .uaa-card.uaa6 { --card-color: #fd79a8; }
+
+        .uaa-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 50%;
+            background: var(--card-color);
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .uaa-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .uaa-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .uaa-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .topic-tag {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .footer {
+            background: #34495e;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .uaa-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+                gap: 20px;
+            }
+            
+            .uaa-card {
+                padding: 20px;
+            }
+        }
+
+        /* Animation d'entrée */
+        .uaa-card {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .uaa-card:nth-child(1) { animation-delay: 0.1s; }
+        .uaa-card:nth-child(2) { animation-delay: 0.2s; }
+        .uaa-card:nth-child(3) { animation-delay: 0.3s; }
+        .uaa-card:nth-child(4) { animation-delay: 0.4s; }
+        .uaa-card:nth-child(5) { animation-delay: 0.5s; }
+        .uaa-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header" id="main-header">
+            <div class="header-content">
+                <h1>🎓 IPES de Hesbaye 🎓</h1>
+                <h2> Mathématiques (5H) - 4TT</h2>
+                <p>Remédiations & Différenciation</p><br>
+ 	        <p>Cours de LIBOY D.</p>
+            </div>
+        </div>
+
+        <div class="uaa-grid">
+            <div class="uaa-card uaa1" onclick="navigateToUAA('uaa1/uaa1.html')">
+                <div class="uaa-number">1</div>
+                <div class="uaa-title">UAA1 : Statistiques descriptives</div>
+                <div class="uaa-description">
+                    Apprenez à analyser des données avec les outils statistiques fondamentaux.
+                </div>
+                <div class="uaa-topics">
+		    <span class="topic-tag">Tableau recensé</span>
+                    <span class="topic-tag">Moyenne</span>
+                    <span class="topic-tag">Médiane</span>
+                    <span class="topic-tag">Mode</span>
+                    <span class="topic-tag">Écart-type</span>
+                </div>
+            </div>
+
+            <div class="uaa-card uaa2" onclick="navigateToUAA('uaa2/uaa2.html')">
+                <div class="uaa-number">2</div>
+                <div class="uaa-title">UAA2 : Géométrie dans l'espace</div>
+                <div class="uaa-description">
+                   Représentation en PC / Section et point de percée dans les solides
+                </div>
+                <div class="uaa-topics">
+                    <span class="topic-tag">Solides</span>
+                    <span class="topic-tag">Perspective cavalière</span>
+                    <span class="topic-tag">Sections</span>
+                    <span class="topic-tag">Point de percée</span>
+		    <span class="topic-tag">Propriétés du plan</span>
+                </div>
+            </div>
+
+            <div class="uaa-card uaa3" onclick="navigateToUAA('uaa3/uaa3.html')">
+                <div class="uaa-number">3</div>
+                <div class="uaa-title">UAA3 : Trigonométrie</div>
+                <div class="uaa-description">
+                    Maîtrisez les relations trigonométriques dans le triangle quelconque.
+                </div>
+                <div class="uaa-topics">
+                    <span class="topic-tag">Sinus, Cosinus, Tangente</span>
+                    <span class="topic-tag">Loi des sinus</span>
+                    <span class="topic-tag">Théorème d'Al Kashi</span>
+                    <span class="topic-tag">Aire du triangle</span>
+                </div>
+            </div>
+
+            <div class="uaa-card uaa4" onclick="navigateToUAA('uaa4/uaa4.html')">
+                <div class="uaa-number">4</div>
+                <div class="uaa-title">UAA4 : Fonctions de référence</div>
+                <div class="uaa-description">
+                    Découvrez les fonctions essentielles et leurs représentations graphiques.
+                </div>
+                <div class="uaa-topics">
+                    <span class="topic-tag">Fonction f(x)</span>
+                    <span class="topic-tag">Domaine de défintion</span>
+                    <span class="topic-tag">Parité</span>
+                    <span class="topic-tag">Fonctions de référence</span>
+	            <span class="topic-tag">Manipulations de graphique</span>
+                </div>
+            </div>
+
+            <div class="uaa-card uaa5" onclick="navigateToUAA('uaa5/uaa5.html')">
+                <div class="uaa-number">5</div>
+                <div class="uaa-title">UAA5 : Second degré (trinômes)</div>
+                <div class="uaa-description">
+                    Résoudre les équations du second degré avec le discriminant.Formes et caractéristiques principales d'une fonction du second degré. Inéquations du second degré
+                </div>
+                <div class="uaa-topics">
+                    <span class="topic-tag">Axe de symétrie</span>
+                    <span class="topic-tag">Discriminant</span>
+                    <span class="topic-tag">Racines</span>
+                    <span class="topic-tag">Ordonnée à l'origine</span>
+		    <span class="topic-tag">forme canonique</span>
+		    <span class="topic-tag">Inéquations et Tableau de signe</span>
+
+                </div>
+            </div>
+
+            <div class="uaa-card uaa6" onclick="navigateToUAA('uaa6/uaa6.html')">
+                <div class="uaa-number">6</div>
+                <div class="uaa-title">UAA6 : Géométrie analytique plane</div>
+                <div class="uaa-description">
+                    Travaillez avec les coordonnées : droites, distances et cercles.
+                </div>
+                <div class="uaa-topics">
+                    <span class="topic-tag">Droites</span>
+                    <span class="topic-tag">Distances</span>
+                    <span class="topic-tag">Cercles</span>
+                    <span class="topic-tag">Coordonnées</span>
+		    <span class="topic-tag">Vecteur directeur</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 LIBOY D. / IPES de Hesbaye / Plateforme éducative interactive - HTML/CSS/JS</p>
+        </div>
+    </div>
+
+    <script>
+        function navigateToUAA(filename) {
+            // Effet de transition avant navigation
+            const clickedCard = event.currentTarget;
+            clickedCard.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                window.location.href = filename;
+            }, 150);
+        }
+
+        // Animation au chargement de la page
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.uaa-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+
+        // Ajout d'effets sonores au survol (optionnel)
+        document.querySelectorAll('.uaa-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
