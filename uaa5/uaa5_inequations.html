@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPES de Hesbaye - UAA5: Second degré – LIBOY D.</title>
+  
+  <!-- MathJax pour l'affichage des formules mathématiques -->
+  <script>
+      window.MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']],
+              displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+      };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+:root{
+  --bg1:#0f172a; --bg2:#1d4ed8; --bg3:#7c3aed;
+  --card:#ffffffee; --text:#14213d; --muted:#475569;
+  --accent:#f97316; --accent2:#14b8a6; --ok:#16a34a; --bad:#dc2626;
+  --shadow:0 18px 40px rgba(15,23,42,.18);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  min-height:100vh;
+}
+.container{width:min(1180px,92vw); margin:0 auto; padding:26px 0 40px}
+.hero{
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.16);
+  color:white; border-radius:30px; padding:28px; box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);
+}
+.hero h1{margin:0 0 10px; font-size:clamp(1.8rem,4vw,3rem)}
+.hero p{margin:.35rem 0; line-height:1.6}
+.subtitle{opacity:.92}
+.card{
+  background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow);
+  margin-bottom: 24px;
+}
+.card h2,.card h3{margin-top:0}
+.badge{display:inline-block; padding:6px 12px; border-radius:999px; font-weight:bold; font-size:.85rem; color:white; background:linear-gradient(90deg,var(--accent),#fb7185)}
+.topbar{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:18px}
+.back-btn,.btn{
+  border:none; cursor:pointer; border-radius:999px; padding:12px 18px; font-weight:700;
+  background:linear-gradient(90deg,var(--accent),#fb7185); color:white; box-shadow:var(--shadow); text-decoration:none;
+}
+.btn.alt{background:linear-gradient(90deg,var(--accent2),#38bdf8)}
+.btn.dark{background:linear-gradient(90deg,#334155,#0f172a)}
+.btn.ghost{background:#eef2ff; color:#1e293b; box-shadow:none; border:1px solid #cbd5e1}
+.btn.solution{background:linear-gradient(90deg, #8b5cf6, #d946ef);}
+.actions{display:flex; flex-wrap:wrap; gap:10px}
+input, select, textarea{
+  width:100%; padding:12px 14px; border:1px solid #cbd5e1; border-radius:14px; font-size:1rem;
+}
+input.point-input {
+  width: 80px; display: inline-block; text-align: center;
+}
+label{font-weight:700; display:block; margin:.3rem 0}
+small,.muted{color:var(--muted)}
+.result{padding:16px; border-radius:14px; margin-top:20px; font-weight:normal; display:none;}
+.result h3 { margin-top: 0; color: #1e293b; }
+.ok{background:#dcfce7; color:#166534}
+.bad{background:#fee2e2; color:#991b1b}
+.info{background:#e0f2fe; color:#075985}
+.warning{background:#fef3c7; color:#92400e}
+details{background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:12px 14px}
+details summary{cursor:pointer; font-weight:700}
+
+/* Tables génériques */
+table{width:100%; border-collapse:collapse; background:white; border-radius:18px; overflow:hidden}
+th,td{padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; vertical-align:top}
+th{background:#eff6ff}
+
+/* Tableaux de signes spécifiques */
+.sign-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    text-align: center;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.sign-table th, .sign-table td {
+    border: 1px solid #cbd5e1;
+    padding: 10px;
+    vertical-align: middle;
+    text-align: center;
+}
+.sign-table tr:first-child {
+    border-bottom: 2px solid #94a3b8;
+    background-color: #f1f5f9;
+}
+
+.form-row{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-bottom: 12px; justify-content: center;}
+.math{font-family:"Cambria Math","Times New Roman",serif; font-size:1.05rem}
+.footer-note{color:white; opacity:.9; text-align:center; padding:10px}
+ul.tight li{margin:.35rem 0}
+.exercise-block{border:1px solid #e2e8f0; border-radius:18px; padding:20px; background:#fff; margin-top: 18px;}
+.tabs { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 6px; }
+.tab { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: bold; white-space: nowrap; transition: all 0.2s; backdrop-filter: blur(10px); }
+.tab:hover { background: rgba(255, 255, 255, 0.25); }
+.tab.active { background: white; color: var(--text); box-shadow: var(--shadow); }
+
+.equation-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: #f8fafc;
+    padding: 15px 20px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+.solution-box {
+    margin-top: 15px;
+    padding: 15px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px solid #c7d2fe;
+    font-size: 1.3rem;
+}
+
+@media print{
+  body{background:white}
+  .hero{color:#111; background:#fff; border:1px solid #ddd; box-shadow:none}
+  .back-btn,.actions,.footer-note,.tabs{display:none!important}
+  .card{box-shadow:none; border:1px solid #ddd}
+  .container{width:100%; padding:0}
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <a class="back-btn" href="../index.html">⟵ Retour à l'accueil</a>
+      <span class="badge">UAA5</span>
+    </div>
+
+    <section class="hero">
+      <h2>IPES DE HESBAYE - MATHEMATIQUES (5H) - 4TT</h2>
+      <h2>CHAPITRE 7: Second degré </h2>
+      <p>LIBOY D.</p>
+    </section>
+    
+    <br>
+    <nav class="tabs">
+      <a href="uaa5.html" class="tab">Forme générale</a>
+      <a href="uaa5_canonique.html" class="tab">Forme canonique</a>
+      <a href="uaa5_inequations.html" class="tab active">Inéquations</a>
+      <a href="uaa5_synthese.html" class="tab">Synthèse</a>
+      <a href="uaa5_videos.html" class="tab">Vidéos</a>
+    </nav>
+
+    <section class="card">
+      <h2>Résolution d'inéquations du second degré</h2>
+      <p>Entrez les coefficients $a$, $b$, $c$ et choisissez le signe d'inégalité pour obtenir la résolution détaillée de l'inéquation.</p>
+      
+      <div class="exercise-block">
+        <div class="form-row">
+            <div class="equation-input-group">
+                <input type="number" id="coeff_a" class="point-input" placeholder="a" value="1"> $x^2$ + 
+                <input type="number" id="coeff_b" class="point-input" placeholder="b" value="-5"> $x$ + 
+                <input type="number" id="coeff_c" class="point-input" placeholder="c" value="6">
+                
+                <select id="ineq_sign" style="width: auto; font-weight: bold; font-size: 1.1rem; margin-left: 10px;">
+                    <option value=">">&gt; 0</option>
+                    <option value=">=">&ge; 0</option>
+                    <option value="<" selected>&lt; 0</option>
+                    <option value="<=">&le; 0</option>
+                </select>
+            </div>
+        </div>
+      </div>
+      
+      <div class="actions" style="margin-top:18px; justify-content: center;">
+        <button class="btn ghost" onclick="generateRandom()">Générer au hasard</button>
+        <button class="btn solution" onclick="solveInequality()">Résoudre l'inéquation</button>
+      </div>
+      
+      <div id="resultBox" class="result info"></div>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>🧭 Rappel de la méthode</summary>
+        <ol class="tight">
+          <li><strong>Préparation :</strong> S'assurer que l'inéquation est de la forme $ax^2 + bx + c > 0$ (ou $<$, $\ge$, $\le$).</li>
+          <li><strong>Racines :</strong> Calculer le réalisant $\Delta = b^2 - 4ac$ pour trouver les racines de l'équation $ax^2 + bx + c = 0$.</li>
+          <li><strong>Tableau de signes :</strong>
+            <ul>
+                <li>Placer les racines trouvées dans l'ordre croissant sur la première ligne.</li>
+                <li>Règle d'or : le signe à l'extérieur des racines est <strong>le signe de $a$</strong>. Entre les racines, c'est le signe opposé.</li>
+            </ul>
+          </li>
+          <li><strong>Conclusion :</strong> Lire le tableau pour trouver les intervalles qui correspondent au signe demandé par l'inéquation initiale.</li>
+        </ol>
+      </details>
+    </section>
+
+    <p class="footer-note">&copy; 2026 LIBOY D. / IPES de Hesbaye / Plateforme éducative interactive - HTML/CSS/JS</p>
+  </div>
+
+  <script>
+    function formatNum(num) {
+        return Number.isInteger(num) ? num : num.toFixed(2);
+    }
+
+    function generateRandom() {
+        // Génère des coefficients aléatoires (a != 0)
+        let a = 0;
+        while(a === 0) {
+            a = Math.floor(Math.random() * 9) - 4; // Entre -4 et 4
+        }
+        let b = Math.floor(Math.random() * 11) - 5; // Entre -5 et 5
+        let c = Math.floor(Math.random() * 11) - 5; // Entre -5 et 5
+        
+        document.getElementById('coeff_a').value = a;
+        document.getElementById('coeff_b').value = b;
+        document.getElementById('coeff_c').value = c;
+        
+        const signs = ['>', '>=', '<', '<='];
+        document.getElementById('ineq_sign').value = signs[Math.floor(Math.random() * signs.length)];
+        
+        // Cacher le résultat précédent
+        document.getElementById('resultBox').style.display = 'none';
+    }
+
+    function solveInequality() {
+        const a = parseFloat(document.getElementById('coeff_a').value);
+        const b = parseFloat(document.getElementById('coeff_b').value);
+        const c = parseFloat(document.getElementById('coeff_c').value);
+        const sign = document.getElementById('ineq_sign').value;
+        const resultDiv = document.getElementById('resultBox');
+
+        if (isNaN(a) || isNaN(b) || isNaN(c)) {
+            resultDiv.innerHTML = "<p style='color: var(--bad); font-weight: bold;'>⚠️ Veuillez remplir tous les coefficients avec des nombres valides.</p>";
+            resultDiv.style.display = 'block';
+            return;
+        }
+
+        if (a === 0) {
+            resultDiv.innerHTML = "<p style='color: var(--bad); font-weight: bold;'>⚠️ Le coefficient 'a' ne peut pas être nul (ce ne serait plus du second degré).</p>";
+            resultDiv.style.display = 'block';
+            return;
+        }
+
+        const delta = (b * b) - (4 * a * c);
+        const signA = a > 0 ? '+' : '-';
+        const oppSignA = a > 0 ? '-' : '+';
+        let stepsHtml = `<h3>Résolution de $${a}x^2 ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c} ${sign} 0$</h3>`;
+        
+        stepsHtml += `<p><strong>1. Calcul du réalisant ($\\Delta$) :</strong><br>
+                      $\\Delta = b^2 - 4ac$<br>
+                      $\\Delta = (${b})^2 - 4 \\cdot (${a}) \\cdot (${c}) = ${delta}$</p>`;
+
+        let roots = [];
+        if (delta > 0) {
+            const x1 = (-b - Math.sqrt(delta)) / (2 * a);
+            const x2 = (-b + Math.sqrt(delta)) / (2 * a);
+            roots = [x1, x2].sort((val1, val2) => val1 - val2); // Trier les racines
+
+            stepsHtml += `<p><strong>2. Racines :</strong> Comme $\\Delta > 0$, il y a deux racines distinctes :<br>
+                          $x_1 = \\frac{-(${b}) - \\sqrt{${delta}}}{2 \\cdot (${a})} = ${formatNum(roots[0])}$<br>
+                          $x_2 = \\frac{-(${b}) + \\sqrt{${delta}}}{2 \\cdot (${a})} = ${formatNum(roots[1])}$</p>`;
+            
+            stepsHtml += `<p><strong>3. Tableau de signes :</strong> (Le signe de $a = ${a}$ est ${signA})</p>
+                          <table class="sign-table">
+                            <tr>
+                              <td>$x$</td>
+                              <td>$-\\infty$</td>
+                              <td></td>
+                              <td>$${formatNum(roots[0])}$</td>
+                              <td></td>
+                              <td>$${formatNum(roots[1])}$</td>
+                              <td></td>
+                              <td>$+\\infty$</td>
+                            </tr>
+                            <tr>
+                              <td>$f(x)$</td>
+                              <td></td>
+                              <td>${signA}</td>
+                              <td>$0$</td>
+                              <td>${oppSignA}</td>
+                              <td>$0$</td>
+                              <td>${signA}</td>
+                              <td></td>
+                            </tr>
+                          </table>`;
+
+        } else if (delta === 0) {
+            const x0 = -b / (2 * a);
+            roots = [x0];
+            
+            stepsHtml += `<p><strong>2. Racine double :</strong> Comme $\\Delta = 0$, il y a une seule racine :<br>
+                          $x_0 = \\frac{-(${b})}{2 \\cdot (${a})} = ${formatNum(x0)}$</p>`;
+
+            stepsHtml += `<p><strong>3. Tableau de signes :</strong> (Le signe de $a = ${a}$ est ${signA})</p>
+                          <table class="sign-table">
+                            <tr>
+                              <td>$x$</td>
+                              <td>$-\\infty$</td>
+                              <td></td>
+                              <td>$${formatNum(x0)}$</td>
+                              <td></td>
+                              <td>$+\\infty$</td>
+                            </tr>
+                            <tr>
+                              <td>$f(x)$</td>
+                              <td></td>
+                              <td>${signA}</td>
+                              <td>$0$</td>
+                              <td>${signA}</td>
+                              <td></td>
+                            </tr>
+                          </table>`;
+        } else {
+            stepsHtml += `<p><strong>2. Racines :</strong> Comme $\\Delta < 0$, il n'y a pas de racine réelle.</p>`;
+            
+            stepsHtml += `<p><strong>3. Tableau de signes :</strong> (Le signe de $a = ${a}$ est ${signA} partout)</p>
+                          <table class="sign-table">
+                            <tr>
+                              <td>$x$</td>
+                              <td>$-\\infty$</td>
+                              <td></td>
+                              <td>$+\\infty$</td>
+                            </tr>
+                            <tr>
+                              <td>$f(x)$</td>
+                              <td></td>
+                              <td>${signA}</td>
+                              <td></td>
+                            </tr>
+                          </table>`;
+        }
+
+        // Détermination de l'ensemble solution
+        let solutionSet = "";
+        
+        if (delta < 0) {
+            if ((a > 0 && (sign === '>' || sign === '>=')) || (a < 0 && (sign === '<' || sign === '<='))) {
+                solutionSet = "\\mathbb{R}";
+            } else {
+                solutionSet = "\\emptyset";
+            }
+        } else if (delta === 0) {
+            const x0 = roots[0];
+            if (a > 0) {
+                if (sign === '>') solutionSet = `\\mathbb{R} \\setminus \\{${formatNum(x0)}\\}`;
+                else if (sign === '>=') solutionSet = "\\mathbb{R}";
+                else if (sign === '<') solutionSet = "\\emptyset";
+                else if (sign === '<=') solutionSet = `\\{${formatNum(x0)}\\}`;
+            } else { // a < 0
+                if (sign === '<') solutionSet = `\\mathbb{R} \\setminus \\{${formatNum(x0)}\\}`;
+                else if (sign === '<=') solutionSet = "\\mathbb{R}";
+                else if (sign === '>') solutionSet = "\\emptyset";
+                else if (sign === '>=') solutionSet = `\\{${formatNum(x0)}\\}`;
+            }
+        } else { // delta > 0
+            const x1 = roots[0];
+            const x2 = roots[1];
+            
+            if (a > 0) {
+                if (sign === '>') solutionSet = `]-\\infty ; ${formatNum(x1)}[ \\cup ]${formatNum(x2)} ; +\\infty[`;
+                else if (sign === '>=') solutionSet = `]-\\infty ; ${formatNum(x1)}] \\cup [${formatNum(x2)} ; +\\infty[`;
+                else if (sign === '<') solutionSet = `]${formatNum(x1)} ; ${formatNum(x2)}[`;
+                else if (sign === '<=') solutionSet = `[${formatNum(x1)} ; ${formatNum(x2)}]`;
+            } else { // a < 0
+                if (sign === '>') solutionSet = `]${formatNum(x1)} ; ${formatNum(x2)}[`;
+                else if (sign === '>=') solutionSet = `[${formatNum(x1)} ; ${formatNum(x2)}]`;
+                else if (sign === '<') solutionSet = `]-\\infty ; ${formatNum(x1)}[ \\cup ]${formatNum(x2)} ; +\\infty[`;
+                else if (sign === '<=') solutionSet = `]-\\infty ; ${formatNum(x1)}] \\cup [${formatNum(x2)} ; +\\infty[`;
+            }
+        }
+
+        stepsHtml += `
+            <p><strong>4. Conclusion :</strong> D'après l'analyse des signes, l'ensemble des solutions est :</p>
+            <div class="solution-box">
+               $S = ${solutionSet}$
+            </div>
+            <p style="text-align: center; margin-top: 10px;"><small>(Note: si besoin, les racines sont arrondies à 2 décimales)</small></p>
+        `;
+
+        resultDiv.innerHTML = stepsHtml;
+        resultDiv.style.display = 'block';
+
+        // Actualiser l'affichage MathJax
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    }
+  </script>
+</body>
+</html>

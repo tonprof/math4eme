@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPES de Hesbaye - UAA5: Second degré – LIBOY D.</title>
+  <style>
+:root{
+  --bg1:#0f172a; --bg2:#1d4ed8; --bg3:#7c3aed;
+  --card:#ffffffee; --text:#14213d; --muted:#475569;
+  --accent:#f97316; --accent2:#14b8a6; --ok:#16a34a; --bad:#dc2626;
+  --shadow:0 18px 40px rgba(15,23,42,.18);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  min-height:100vh;
+}
+.container{width:min(1180px,92vw); margin:0 auto; padding:26px 0 40px}
+.hero{
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.16);
+  color:white; border-radius:30px; padding:28px; box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);
+}
+.hero h1{margin:0 0 10px; font-size:clamp(1.8rem,4vw,3rem)}
+.hero p{margin:.35rem 0; line-height:1.6}
+.subtitle{opacity:.92}
+.card{
+  background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow);
+  margin-bottom: 24px;
+}
+.card h2,.card h3{margin-top:0}
+.badge{display:inline-block; padding:6px 12px; border-radius:999px; font-weight:bold; font-size:.85rem; color:white; background:linear-gradient(90deg,var(--accent),#fb7185)}
+.topbar{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:18px}
+.back-btn,.btn{
+  border:none; cursor:pointer; border-radius:999px; padding:12px 18px; font-weight:700;
+  background:linear-gradient(90deg,var(--accent),#fb7185); color:white; box-shadow:var(--shadow); text-decoration:none;
+}
+.btn.alt{background:linear-gradient(90deg,var(--accent2),#38bdf8)}
+.btn.dark{background:linear-gradient(90deg,#334155,#0f172a)}
+.btn.ghost{background:#eef2ff; color:#1e293b; box-shadow:none; border:1px solid #cbd5e1}
+.btn.solution{background:linear-gradient(90deg, #8b5cf6, #d946ef);}
+.actions{display:flex; flex-wrap:wrap; gap:10px}
+input, select, textarea{
+  width:100%; padding:12px 14px; border:1px solid #cbd5e1; border-radius:14px; font-size:1rem;
+}
+input.point-input {
+  width: 80px; display: inline-block; text-align: center;
+}
+label{font-weight:700; display:block; margin:.3rem 0}
+small,.muted{color:var(--muted)}
+.result{padding:10px 14px; border-radius:14px; margin-top:10px; font-weight:bold}
+.ok{background:#dcfce7; color:#166534}
+.bad{background:#fee2e2; color:#991b1b}
+.info{background:#e0f2fe; color:#075985}
+.warning{background:#fef3c7; color:#92400e}
+details{background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:12px 14px}
+details summary{cursor:pointer; font-weight:700}
+table{width:100%; border-collapse:collapse; background:white; border-radius:18px; overflow:hidden}
+th,td{padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; vertical-align:top}
+th{background:#eff6ff}
+.form-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom: 12px;}
+.characteristic-list { display: flex; flex-direction: column; gap: 12px; max-width: 500px; margin: 0 auto; }
+.characteristic-list > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #f8fafc; padding: 10px 16px; border-radius: 12px; border: 1px solid #e2e8f0; }
+.characteristic-list label { margin: 0; flex: 1; text-align: left; }
+.characteristic-list input, .characteristic-list select { width: 220px; margin: 0; padding: 10px 14px; }
+.point-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.math{font-family:"Cambria Math","Times New Roman",serif; font-size:1.05rem}
+.footer-note{color:white; opacity:.9; text-align:center; padding:10px}
+ul.tight li{margin:.35rem 0}
+.exercise-block{border:1px solid #e2e8f0; border-radius:18px; padding:20px; background:#fff; margin-top: 18px;}
+.tabs { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 6px; }
+.tab { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: bold; white-space: nowrap; transition: all 0.2s; backdrop-filter: blur(10px); }
+.tab:hover { background: rgba(255, 255, 255, 0.25); }
+.tab.active { background: white; color: var(--text); box-shadow: var(--shadow); }
+@media print{
+  body{background:white}
+  .hero{color:#111; background:#fff; border:1px solid #ddd; box-shadow:none}
+  .back-btn,.actions,.footer-note,.tabs{display:none!important}
+  .card{box-shadow:none; border:1px solid #ddd}
+  .container{width:100%; padding:0}
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <a class="back-btn" href="../index.html">⟵ Retour à l'accueil</a>
+      <span class="badge">UAA5</span>
+    </div>
+
+ 
+
+    <section class="hero">
+      <h2>IPES DE HESBAYE - MATHEMATIQUES (5H) - 4TT</h2>
+      <h2>CHAPITRE 7: Second degré </h2>
+	<P>LIBOY D.</P>
+
+    </section>
+<br>
+    <nav class="tabs">
+      <a href="uaa5.html" class="tab active">Forme générale</a>
+      <a href="uaa5_canonique.html" class="tab">Forme canonique</a>
+      <a href="uaa5_inequations.html" class="tab">Inéquations</a>
+      <a href="uaa5_synthese.html" class="tab">Synthèse</a>
+      <a href="uaa5_videos.html" class="tab">Vidéos</a>
+    </nav>
+<section class="card">
+  <h2>Etude des caractéristiques principales d'une fonction du second degré</h2>
+  <p>Calcule les caractéristiques principales de la fonction ci-dessous et détermine quatre points particuliers.</p>
+  <div class="actions">
+    <button class="btn ghost" onclick="generateExercise()">Nouvel exercice</button>
+    <button class="btn ghost" onclick="window.print()">Imprimer / PDF</button>
+  </div>
+  
+  <div id="exerciseContainer"></div>
+  
+  <div class="actions" style="margin-top:18px">
+    <button class="btn" onclick="checkExercise()">Vérifier mes réponses</button>
+    <button class="btn solution" onclick="showSolutions()">Donner les solutions</button>
+  </div>
+  
+  <div id="quadFeedback" class="result info">Génère un exercice pour commencer.</div>
+</section>
+
+<section class="card">
+  <details>
+    <summary>🧭 Conseils de résolution</summary>
+    <ol class="tight">
+      <li>Commence par observer le signe de <span class="math">a</span> pour déterminer la concavité.</li>
+      <li>Trouve l'axe de symétrie avec l'équation <span class="math">x=-b/(2a)</span>.</li>
+      <li>Calcule ensuite le discriminant <span class="math">Δ=b²-4ac</span>.</li>
+      <li>Le sommet a pour abscisse l'axe de symétrie. Remplace ce <span class="math">x</span> dans la fonction pour trouver l'ordonnée.</li>
+      <li>L'ordonnée à l'origine correspond au terme indépendant <span class="math">c</span>.</li>
+      <li>Utilise le discriminant pour trouver les racines éventuelles.</li>
+      <li>Pour les points particuliers, choisis les 4 nombres entiers qui suivent directement l'axe de symétrie à droite (plus grands).</li>
+    </ol>
+  </details>
+</section>
+
+    <p class="footer-note">© 2026 LIBOY D. / IPES de Hesbaye / Plateforme éducative interactive - HTML/CSS/JS</p>
+  </div>
+  <script>
+  
+let currentExercise = null;
+
+function r2(x){ return Math.round(x*100)/100; }
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+function makeEquation(){
+  let a,b,c,delta;
+  while(true){
+    a = randInt(-3,3); if(a===0) continue;
+    // Pour garantir un axe entier ou en .5, b doit être un multiple de a
+    let k = randInt(-8, 8);
+    b = k * a;
+    c = randInt(-8,8);
+    delta = b*b - 4*a*c;
+    break; // We accept any delta now that root nature is removed
+  }
+  const axis = -b/(2*a);
+  const y0 = c;
+  const ys = a*axis*axis + b*axis + c;
+  
+  let roots = [];
+  if(delta > 0) {
+    roots = [r2((-b - Math.sqrt(delta))/(2*a)), r2((-b + Math.sqrt(delta))/(2*a))];
+  } else if(delta === 0) {
+    roots = [r2(-b/(2*a))];
+  }
+  
+  const eq = `${a===1?'':a===-1?'-':a}x² ${b<0?'-':'+'} ${Math.abs(b)}x ${c<0?'-':'+'} ${Math.abs(c)}`
+                .replace(/\+\s0x/g,'')
+                .replace(/\-\s0x/g,'')
+                .replace(/\+\s0$/,'')
+                .replace(/\-\s0$/,'')
+                .replace(/\s+/g,' ')
+                .trim();
+                
+  return {a, b, c, delta, axis: r2(axis), ys: r2(ys), y0, eq, roots};
+}
+
+function renderExercise(){
+  const host = document.getElementById('exerciseContainer');
+  host.innerHTML = `
+    <div class="exercise-block">
+      <p class="math" style="font-size: 1.3rem; text-align: center; margin: 0 0 20px 0;"><strong>f(x) = ${currentExercise.eq}</strong></p>
+      
+      <div class="characteristic-list">
+        <div><label>Concavité</label>
+          <select id="concavite">
+            <option value="">-- Choisir --</option>
+            <option value="up">Vers le haut (convexe ∪)</option>
+            <option value="down">Vers le bas (concave ∩)</option>
+          </select>
+        </div>
+        <div><label>Axe de symétrie</label><input id="axis" type="text" placeholder="ex. x = 2 ou 2"></div>
+        <div><label>Δ (Discriminant)</label><input id="delta" type="number" step="0.01"></div>
+        <div><label>Abscisse du sommet</label><input id="xs" type="number" step="0.01"></div>
+        <div><label>Ordonnée du sommet</label><input id="ys" type="number" step="0.01"></div>
+        <div><label>Ordonnée à l'origine</label><input id="y0" type="number" step="0.01"></div>
+        <div><label>Racine 1 <small>(vide si aucune)</small></label><input id="r1" type="number" step="0.01"></div>
+        <div><label>Racine 2 <small>(vide si aucune)</small></label><input id="r2" type="number" step="0.01"></div>
+      </div>
+      
+      <div style="margin-top:24px; padding-top: 18px; border-top: 1px solid #e2e8f0; text-align: center;">
+        <label style="font-size: 1.1rem; margin-bottom: 4px;">Quatre points particuliers</label>
+        <p class="muted" style="margin-top: 0; font-size: 0.9rem;">
+          <em>Indice : choisis 4 valeurs entières de x consécutives qui sont directement à droite (plus grandes) que l'axe de symétrie.</em>
+        </p>
+        
+        <div style="display: inline-block; text-align: left;">
+          <div class="point-row">
+            <strong>Point 1 :</strong> ( <input type="number" id="pt1x" class="point-input" placeholder="x"> ; <input type="number" id="pt1y" class="point-input" placeholder="y"> )
+          </div>
+          <div class="point-row">
+            <strong>Point 2 :</strong> ( <input type="number" id="pt2x" class="point-input" placeholder="x"> ; <input type="number" id="pt2y" class="point-input" placeholder="y"> )
+          </div>
+          <div class="point-row">
+            <strong>Point 3 :</strong> ( <input type="number" id="pt3x" class="point-input" placeholder="x"> ; <input type="number" id="pt3y" class="point-input" placeholder="y"> )
+          </div>
+          <div class="point-row">
+            <strong>Point 4 :</strong> ( <input type="number" id="pt4x" class="point-input" placeholder="x"> ; <input type="number" id="pt4y" class="point-input" placeholder="y"> )
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function generateExercise(){
+  currentExercise = makeEquation();
+  renderExercise();
+  const fb = document.getElementById('quadFeedback');
+  fb.className = 'result info';
+  fb.textContent = 'Nouvel exercice généré. Complète les champs puis vérifie.';
+}
+
+function parseAxis(v){
+  return Number(String(v).replace('x','').replace('=','').replace(',','.').trim());
+}
+
+// Fonction pour vérifier si un point appartient bien à la parabole
+function isPointOnParabola(x, y, eq) {
+  if (isNaN(x) || isNaN(y)) return false;
+  const expectedY = eq.a * x * x + eq.b * x + eq.c;
+  return Math.abs(expectedY - y) < 0.05;
+}
+
+function checkExercise(){
+  if (!currentExercise) return;
+  
+  // Vérification des caractéristiques
+  const expectedConcavite = currentExercise.a > 0 ? 'up' : 'down';
+  const concaviteOk = document.getElementById('concavite').value === expectedConcavite;
+  
+  const deltaOk = Math.abs(Number(document.getElementById('delta').value) - currentExercise.delta) < 0.06;
+  const axisInput = parseAxis(document.getElementById('axis').value);
+  const axisOk = Math.abs(axisInput - currentExercise.axis) < 0.06;
+  const y0Ok = Math.abs(Number(document.getElementById('y0').value) - currentExercise.y0) < 0.06;
+  const xsOk = Math.abs(Number(document.getElementById('xs').value) - currentExercise.axis) < 0.06;
+  const ysOk = Math.abs(Number(document.getElementById('ys').value) - currentExercise.ys) < 0.06;
+  
+  // Vérification des racines
+  let userRoots = [];
+  const ur1 = parseFloat(document.getElementById('r1').value);
+  const ur2 = parseFloat(document.getElementById('r2').value);
+  if(!isNaN(ur1)) userRoots.push(ur1);
+  if(!isNaN(ur2)) userRoots.push(ur2);
+  
+  let rootsOk = false;
+  if (currentExercise.roots.length === 0 && userRoots.length === 0) {
+    rootsOk = true;
+  } else if (currentExercise.roots.length === 1 && userRoots.length === 1) {
+    rootsOk = Math.abs(userRoots[0] - currentExercise.roots[0]) < 0.06;
+  } else if (currentExercise.roots.length === 2 && userRoots.length === 2) {
+    const match1 = Math.abs(userRoots[0] - currentExercise.roots[0]) < 0.06 && Math.abs(userRoots[1] - currentExercise.roots[1]) < 0.06;
+    const match2 = Math.abs(userRoots[0] - currentExercise.roots[1]) < 0.06 && Math.abs(userRoots[1] - currentExercise.roots[0]) < 0.06;
+    rootsOk = match1 || match2;
+  }
+  
+  // Vérification des points
+  const p1x = parseFloat(document.getElementById('pt1x').value);
+  const p1y = parseFloat(document.getElementById('pt1y').value);
+  const p2x = parseFloat(document.getElementById('pt2x').value);
+  const p2y = parseFloat(document.getElementById('pt2y').value);
+  const p3x = parseFloat(document.getElementById('pt3x').value);
+  const p3y = parseFloat(document.getElementById('pt3y').value);
+  const p4x = parseFloat(document.getElementById('pt4x').value);
+  const p4y = parseFloat(document.getElementById('pt4y').value);
+  
+  const pt1Ok = isPointOnParabola(p1x, p1y, currentExercise);
+  const pt2Ok = isPointOnParabola(p2x, p2y, currentExercise);
+  const pt3Ok = isPointOnParabola(p3x, p3y, currentExercise);
+  const pt4Ok = isPointOnParabola(p4x, p4y, currentExercise);
+  
+  // Vérifier qu'ils sont distincts
+  const pts = new Set([`${p1x},${p1y}`, `${p2x},${p2y}`, `${p3x},${p3y}`, `${p4x},${p4y}`]);
+  const pointsDistincts = pts.size === 4;
+  const allPointsOk = pt1Ok && pt2Ok && pt3Ok && pt4Ok && pointsDistincts;
+
+  const errors = [];
+  if (!concaviteOk) errors.push('la concavité');
+  if (!axisOk) errors.push('l\'axe de symétrie');
+  if (!deltaOk) errors.push('Δ');
+  if (!xsOk) errors.push('l\'abscisse du sommet');
+  if (!ysOk) errors.push('l\'ordonnée du sommet');
+  if (!y0Ok) errors.push('l\'ordonnée à l\'origine');
+  if (!rootsOk) errors.push('les racines');
+  if (!allPointsOk) {
+    if (!pt1Ok || !pt2Ok || !pt3Ok || !pt4Ok) errors.push('un ou plusieurs points sont incorrects');
+    else if (!pointsDistincts) errors.push('les quatre points doivent être différents');
+  }
+  
+  const fb = document.getElementById('quadFeedback');
+  if (errors.length === 0) {
+    fb.className = 'result ok';
+    fb.textContent = '✅ Tout est correct ! Excellent travail.';
+  } else {
+    fb.className = 'result bad';
+    fb.textContent = `❌ Il y a des erreurs. À revoir : ${errors.join(', ')}.`;
+  }
+}
+
+function showSolutions(){
+  if (!currentExercise) return;
+  
+  document.getElementById('concavite').value = currentExercise.a > 0 ? 'up' : 'down';
+  document.getElementById('delta').value = currentExercise.delta;
+  
+  if (currentExercise.roots.length === 0) {
+    document.getElementById('r1').value = '';
+    document.getElementById('r2').value = '';
+  } else if (currentExercise.roots.length === 1) {
+    document.getElementById('r1').value = currentExercise.roots[0];
+    document.getElementById('r2').value = '';
+  } else {
+    document.getElementById('r1').value = currentExercise.roots[0];
+    document.getElementById('r2').value = currentExercise.roots[1];
+  }
+  
+  document.getElementById('axis').value = currentExercise.axis;
+  document.getElementById('y0').value = currentExercise.y0;
+  document.getElementById('xs').value = currentExercise.axis;
+  document.getElementById('ys').value = currentExercise.ys;
+  
+  // Les 4 entiers consécutifs juste à droite de l'axe de symétrie
+  let startX = Math.floor(currentExercise.axis) + 1;
+  
+  // Point 1
+  document.getElementById('pt1x').value = startX;
+  document.getElementById('pt1y').value = currentExercise.a * startX * startX + currentExercise.b * startX + currentExercise.c;
+  
+  // Point 2
+  document.getElementById('pt2x').value = startX + 1;
+  document.getElementById('pt2y').value = currentExercise.a * (startX + 1) * (startX + 1) + currentExercise.b * (startX + 1) + currentExercise.c;
+  
+  // Point 3
+  document.getElementById('pt3x').value = startX + 2;
+  document.getElementById('pt3y').value = currentExercise.a * (startX + 2) * (startX + 2) + currentExercise.b * (startX + 2) + currentExercise.c;
+  
+  // Point 4
+  document.getElementById('pt4x').value = startX + 3;
+  document.getElementById('pt4y').value = currentExercise.a * (startX + 3) * (startX + 3) + currentExercise.b * (startX + 3) + currentExercise.c;
+  
+  const fb = document.getElementById('quadFeedback');
+  fb.className = 'result warning';
+  fb.textContent = 'Les solutions ont été affichées. Utilise les 4 entiers suivant l\'axe de symétrie !';
+}
+
+// Initialisation au chargement
+generateExercise();
+
+  </script>
+</body>
+</html>
