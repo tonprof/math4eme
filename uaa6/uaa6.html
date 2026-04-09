@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPES de Hesbaye - UAA6: Géométrie analytique – LIBOY D.</title>
+  
+  <!-- MathJax pour l'affichage des formules mathématiques -->
+  <script>
+      window.MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']],
+              displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+      };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+:root{
+  --bg1:#0f172a; --bg2:#1d4ed8; --bg3:#7c3aed;
+  --card:#ffffffee; --text:#14213d; --muted:#475569;
+  --accent:#f97316; --accent2:#14b8a6; --ok:#16a34a; --bad:#dc2626;
+  --shadow:0 18px 40px rgba(15,23,42,.18);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  min-height:100vh;
+}
+.container{width:min(1180px,92vw); margin:0 auto; padding:26px 0 40px}
+.hero{
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.16);
+  color:white; border-radius:30px; padding:28px; box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);
+}
+.hero h1{margin:0 0 10px; font-size:clamp(1.8rem,4vw,3rem)}
+.hero p{margin:.35rem 0; line-height:1.6}
+.subtitle{opacity:.92}
+.card{
+  background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow);
+  margin-bottom: 24px;
+}
+.card h2,.card h3{margin-top:0}
+.badge{display:inline-block; padding:6px 12px; border-radius:999px; font-weight:bold; font-size:.85rem; color:white; background:linear-gradient(90deg,var(--accent),#fb7185)}
+.topbar{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:18px}
+.back-btn,.btn{
+  border:none; cursor:pointer; border-radius:999px; padding:12px 18px; font-weight:700;
+  background:linear-gradient(90deg,var(--accent),#fb7185); color:white; box-shadow:var(--shadow); text-decoration:none;
+}
+.btn.alt{background:linear-gradient(90deg,var(--accent2),#38bdf8)}
+.btn.dark{background:linear-gradient(90deg,#334155,#0f172a)}
+.btn.ghost{background:#eef2ff; color:#1e293b; box-shadow:none; border:1px solid #cbd5e1; transition: all 0.2s;}
+.btn.ghost:hover{background:#e0e7ff;}
+.btn.solution{background:linear-gradient(90deg, #8b5cf6, #d946ef);}
+.actions{display:flex; flex-wrap:wrap; gap:10px; margin-top: 20px;}
+
+input[type="number"]{
+  width: 120px; padding:12px; border:1px solid #cbd5e1; border-radius:12px; font-size:1.1rem; font-weight: bold; text-align: center;
+}
+label{font-weight:700; margin:.3rem 0; color:#1e293b; display: block;}
+small,.muted{color:var(--muted)}
+
+.result{padding:16px; border-radius:14px; margin-top:20px; font-weight:normal; display:none;}
+.result h3 { margin-top: 0; color: #1e293b; margin-bottom: 8px;}
+.ok{background:#dcfce7; color:#166534; border: 1px solid #bbf7d0;}
+.bad{background:#fee2e2; color:#991b1b; border: 1px solid #fecaca;}
+.info{background:#fdf4ff; color:#701a75; border: 1px solid #f5d0fe;}
+.warning{background:#fef3c7; color:#92400e; border: 1px solid #fde68a;}
+
+details{background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:12px 14px; margin-bottom: 12px;}
+details summary{cursor:pointer; font-weight:700}
+
+/* Tables génériques */
+table{width:100%; border-collapse:collapse; background:white; border-radius:18px; overflow:hidden; margin-top: 15px;}
+th,td{padding:12px 16px; border-bottom:1px solid #e2e8f0; text-align:left; vertical-align:middle}
+th{background:#fdf4ff; color:#86198f;}
+td.math-cell { font-size: 1.15rem; }
+
+.exercise-block{border:1px solid #e2e8f0; border-radius:18px; padding:20px; background:#fff; margin-top: 18px;}
+.dataset-display {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+    color: #9d174d;
+    background: #fdf2f8;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px dashed #fbcfe8;
+    line-height: 1.6;
+}
+
+.grid-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    align-items: center;
+}
+
+.footer-note{color:white; opacity:.9; text-align:center; padding:10px}
+ul.tight li{margin:.45rem 0}
+
+.tabs { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 6px; }
+.tab { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: bold; white-space: nowrap; transition: all 0.2s; backdrop-filter: blur(10px); }
+.tab:hover { background: rgba(255, 255, 255, 0.25); }
+.tab.active { background: white; color: var(--text); box-shadow: var(--shadow); }
+
+@media print{
+  body{background:white}
+  .hero{color:#111; background:#fff; border:1px solid #ddd; box-shadow:none}
+  .back-btn,.actions,.footer-note,.tabs{display:none!important}
+  .card{box-shadow:none; border:1px solid #ddd}
+  .container{width:100%; padding:0}
+  table { border: 1px solid #cbd5e1; }
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <a class="back-btn" href="../index.html">⟵ Retour à l'accueil</a>
+      <!-- Couleur du badge adaptée pour l'UAA6 (Rose/Magenta) -->
+      <span class="badge" style="background: linear-gradient(90deg, #ec4899, #be185d)">UAA6</span>
+    </div>
+
+    <section class="hero">
+      <h2>IPES DE HESBAYE - MATHEMATIQUES (5H) - 4TT</h2>
+      <h2>CHAPITRE 6: Géométrie analytique plane</h2>
+      <p>LIBOY D.</p>
+    </section>
+    
+    <br>
+    <nav class="tabs">
+      <a href="uaa6.html" class="tab active">Exercices d'entraînement</a>
+    </nav>
+
+    <section class="card">
+      <h2>Générateur de problèmes</h2>
+      <p>Lisez attentivement l'énoncé. Faites vos calculs sur une feuille de brouillon en utilisant les formules adéquates, puis encodez votre réponse finale ci-dessous. <em>(Si la réponse n'est pas exacte, arrondissez à 2 décimales)</em>.</p>
+      
+      <div class="exercise-block">
+        <div class="dataset-display" id="analyticStatement">
+            <!-- L'énoncé du problème apparaîtra ici -->
+        </div>
+
+        <div class="grid-inputs">
+            <div>
+                <label id="analyticLabel">Votre réponse :</label>
+                <input type="number" step="0.01" id="analyticAnswer" placeholder="...">
+            </div>
+        </div>
+      </div>
+      
+      <div class="actions" style="justify-content: center;">
+        <button class="btn ghost" onclick="newAnalyticExercise()">Nouvel énoncé aléatoire</button>
+        <button class="btn solution" onclick="checkAnalytic()">Vérifier ma réponse</button>
+        <button class="btn alt" onclick="showAnalyticHint()">Un indice ?</button>
+        <button class="btn dark" onclick="revealAnalytic()">Voir la solution détaillée</button>
+      </div>
+      
+      <div id="analyticFeedback" class="result"></div>
+      <div id="analyticHint" class="result info" style="margin-top: 10px;"></div>
+      <div id="analyticReveal" class="result warning" style="margin-top: 10px;"></div>
+    </section>
+
+    <section class="card">
+      <h2>Mémento des formules</h2>
+      <p>Voici les formules fondamentales de la géométrie analytique plane à connaître :</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Concept</th>
+            <th>Formule mathématique</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Distance entre deux points</strong> $A(x_A; y_A)$ et $B(x_B; y_B)$</td>
+            <td class="math-cell">$$d(A, B) = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}$$</td>
+          </tr>
+          <tr>
+            <td><strong>Milieu</strong> $M$ du segment $[AB]$</td>
+            <td class="math-cell">$$M\left(\frac{x_A + x_B}{2} ; \frac{y_A + y_B}{2}\right)$$</td>
+          </tr>
+          <tr>
+            <td><strong>Pente</strong> ($m$) de la droite $AB$</td>
+            <td class="math-cell">$$m = \frac{y_B - y_A}{x_B - x_A}$$</td>
+          </tr>
+          <tr>
+            <td><strong>Équation de la droite</strong> passant par $A$ de pente $m$</td>
+            <td class="math-cell">$$y - y_A = m(x - x_A)$$</td>
+          </tr>
+          <tr>
+            <td><strong>Équation cartésienne d'un cercle</strong> de centre $C(x_c; y_c)$ et de rayon $R$</td>
+            <td class="math-cell">$$(x - x_c)^2 + (y - y_c)^2 = R^2$$</td>
+          </tr>
+          <tr>
+            <td><strong>Distance d'un point $P(x_p; y_p)$ à une droite</strong> $d \equiv ax + by + c = 0$</td>
+            <td class="math-cell">$$d(P, d) = \frac{|a x_p + b y_p + c|}{\sqrt{a^2 + b^2}}$$</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="actions" style="margin-top:16px; justify-content: flex-end;">
+        <button class="btn ghost" onclick="window.print()">🖨️ Imprimer la fiche / PDF</button>
+      </div>
+    </section>
+
+    <p class="footer-note">&copy; 2026 LIBOY D. / IPES de Hesbaye / Plateforme éducative interactive</p>
+  </div>
+
+  <script>
+    let analyticExercise = {};
+    let analyticHintLevel = 0;
+
+    // Fonction utilitaire pour générer un entier aléatoire
+    function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // 1. Générateur : Distance entre 2 points
+    function genDistance() {
+        const x1 = randInt(-10, 10), y1 = randInt(-10, 10);
+        let x2 = randInt(-10, 10), y2 = randInt(-10, 10);
+        while(x1 === x2 && y1 === y2) { x2 = randInt(-10, 10); } // Éviter le même point
+
+        const d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        
+        return {
+            statement: `Dans un repère orthonormé, on donne les points $A(${x1} ; ${y1})$ et $B(${x2} ; ${y2})$.<br><br><strong>Calculez la distance $|AB|$.</strong>`,
+            label: "Distance |AB| :",
+            answer: parseFloat(d.toFixed(2)),
+            hints: [
+                "Utilisez la formule de la distance : $d = \\sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}$",
+                `Remplacez par les coordonnées : $d = \\sqrt{(${x2} - ${x1})^2 + (${y2} - ${y1})^2}$`
+            ],
+            details: `On applique la formule :<br>
+                      $|AB| = \\sqrt{(${x2} - (${x1}))^2 + (${y2} - (${y1}))^2}$<br>
+                      $|AB| = \\sqrt{(${x2 - x1})^2 + (${y2 - y1})^2}$<br>
+                      $|AB| = \\sqrt{${Math.pow(x2-x1, 2)} + ${Math.pow(y2-y1, 2)}} = \\sqrt{${Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2)}}$<br>
+                      $|AB| \\approx ${d.toFixed(2)}$`
+        };
+    }
+
+    // 2. Générateur : Pente d'une droite
+    function genPente() {
+        const x1 = randInt(-8, 8), y1 = randInt(-8, 8);
+        let x2 = randInt(-8, 8), y2 = randInt(-8, 8);
+        while(x1 === x2) { x2 = randInt(-8, 8); } // Éviter une division par zéro (droite verticale)
+
+        const m = (y2 - y1) / (x2 - x1);
+        
+        return {
+            statement: `Dans un repère, la droite $d$ passe par les points $A(${x1} ; ${y1})$ et $B(${x2} ; ${y2})$.<br><br><strong>Que vaut la pente $m$ de cette droite ?</strong>`,
+            label: "Pente m :",
+            answer: parseFloat(m.toFixed(2)),
+            hints: [
+                "La formule de la pente est : $m = \\frac{y_B - y_A}{x_B - x_A}$",
+                `Remplacez par les coordonnées : $m = \\frac{${y2} - ${y1}}{${x2} - ${x1}}$`
+            ],
+            details: `On applique la formule de la pente :<br>
+                      $m = \\frac{y_B - y_A}{x_B - x_A}$<br>
+                      $m = \\frac{${y2} - (${y1})}{${x2} - (${x1})}$<br>
+                      $m = \\frac{${y2 - y1}}{${x2 - x1}} = ${m.toFixed(2)}$`
+        };
+    }
+
+    // 3. Générateur : Équation du cercle
+    function genCercle() {
+        const xc = randInt(-6, 6), yc = randInt(-6, 6);
+        const r = randInt(2, 9);
+        const R2 = r * r;
+        
+        return {
+            statement: `Un cercle a pour centre $C(${xc} ; ${yc})$ et pour rayon $R = ${r}$.<br><br>Son équation cartésienne s'écrit sous la forme $(x - x_c)^2 + (y - y_c)^2 = K$.<br><strong>Que vaut la valeur $K$ (le membre de droite) ?</strong>`,
+            label: "Valeur de K :",
+            answer: R2,
+            hints: [
+                "L'équation d'un cercle de centre $C(x_c ; y_c)$ et de rayon $R$ est $(x - x_c)^2 + (y - y_c)^2 = R^2$.",
+                `Ici, le rayon est $R = ${r}$. Que vaut son carré ?`
+            ],
+            details: `Le membre de droite correspond au carré du rayon ($R^2$).<br>
+                      Puisque $R = ${r}$, alors $K = ${r}^2 = ${R2}$.<br>
+                      L'équation complète est : $(x ${xc < 0 ? '+' : '-'} ${Math.abs(xc)})^2 + (y ${yc < 0 ? '+' : '-'} ${Math.abs(yc)})^2 = ${R2}$.`
+        };
+    }
+
+    // 4. Générateur : Distance d'un point à une droite
+    function genPointDroite() {
+        let a = randInt(-5, 5);
+        if (a === 0) a = 2; // Éviter a=0
+        let b = randInt(-5, 5);
+        if (b === 0) b = -3; // Éviter b=0
+        const c = randInt(-10, 10);
+        
+        const xp = randInt(-5, 5), yp = randInt(-5, 5);
+        
+        const numerateur = Math.abs(a * xp + b * yp + c);
+        const denominateur = Math.sqrt(a*a + b*b);
+        const d = numerateur / denominateur;
+        
+        // Affichage propre de l'équation
+        let eqStr = `${a}x `;
+        eqStr += b > 0 ? `+ ${b}y ` : `- ${Math.abs(b)}y `;
+        if (c > 0) eqStr += `+ ${c} = 0`;
+        else if (c < 0) eqStr += `- ${Math.abs(c)} = 0`;
+        else eqStr += `= 0`;
+
+        return {
+            statement: `On donne la droite $d \\equiv ${eqStr}$ et le point $P(${xp} ; ${yp})$.<br><br><strong>Calculez la distance entre le point $P$ et la droite $d$.</strong>`,
+            label: "Distance d(P, d) :",
+            answer: parseFloat(d.toFixed(2)),
+            hints: [
+                "Utilisez la formule : $d(P, d) = \\frac{|a x_p + b y_p + c|}{\\sqrt{a^2 + b^2}}$",
+                `Identifiez les coefficients : $a=${a}$, $b=${b}$, $c=${c}$ et le point $(x_p;y_p)=(${xp};${yp})$.`
+            ],
+            details: `On applique la formule avec $a=${a}$, $b=${b}$, $c=${c}$ :<br>
+                      $d = \\frac{|${a}(${xp}) + (${b})(${yp}) + (${c})|}{\\sqrt{${a}^2 + (${b})^2}}$<br>
+                      $d = \\frac{|${a*xp} ${b*yp > 0 ? '+' : ''} ${b*yp} ${c > 0 ? '+' : ''} ${c > 0 ? c : (c<0 ? c : '')}|}{\\sqrt{${a*a} + ${b*b}}}$<br>
+                      $d = \\frac{|${a*xp + b*yp + c}|}{\\sqrt{${a*a + b*b}}} = \\frac{${numerateur}}{\\sqrt{${a*a + b*b}}}$<br>
+                      $d \\approx ${d.toFixed(2)}$`
+        };
+    }
+
+    function newAnalyticExercise() {
+        const generators = [genDistance, genPente, genCercle, genPointDroite];
+        analyticExercise = generators[Math.floor(Math.random() * generators.length)]();
+        analyticHintLevel = 0;
+        
+        document.getElementById('analyticStatement').innerHTML = analyticExercise.statement;
+        document.getElementById('analyticLabel').innerText = analyticExercise.label;
+        document.getElementById('analyticAnswer').value = '';
+        
+        document.getElementById('analyticFeedback').style.display = 'none';
+        document.getElementById('analyticHint').style.display = 'none';
+        document.getElementById('analyticReveal').style.display = 'none';
+
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    function checkAnalytic() {
+        const userVal = document.getElementById('analyticAnswer').value.replace(',', '.');
+        const user = parseFloat(userVal);
+        const fb = document.getElementById('analyticFeedback');
+        
+        fb.style.display = 'block';
+
+        if (isNaN(user)) {
+            fb.className = 'result bad';
+            fb.innerHTML = '❌ Veuillez entrer un nombre valide.';
+            return;
+        }
+
+        // Tolérance de 0.05 pour les erreurs d'arrondis
+        const isOk = Math.abs(user - analyticExercise.answer) <= 0.05;
+        
+        if (isOk) {
+            fb.className = 'result ok';
+            fb.innerHTML = `<h3>✅ Bonne réponse !</h3><p>La valeur est correcte : <strong>${analyticExercise.answer}</strong>.</p>`;
+        } else {
+            fb.className = 'result bad';
+            fb.innerHTML = `<h3>❌ Ce n'est pas correct.</h3><p>Vérifiez vos calculs, les règles de signes ($(-)^2 = +$) et assurez-vous d'avoir bien arrondi.</p>`;
+        }
+    }
+
+    function showAnalyticHint() {
+        analyticHintLevel++;
+        const box = document.getElementById('analyticHint');
+        box.style.display = 'block';
+        box.innerHTML = `💡 <strong>Indice ${analyticHintLevel} :</strong> ` + analyticExercise.hints[Math.min(analyticHintLevel - 1, analyticExercise.hints.length - 1)];
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    function revealAnalytic() {
+        const box = document.getElementById('analyticReveal');
+        box.style.display = 'block';
+        box.innerHTML = `<h3>Correction détaillée :</h3>
+            <p>${analyticExercise.details}</p>
+            <p style="margin-top:10px; font-size:1.1rem">Réponse finale attendue : <strong>${analyticExercise.answer}</strong></p>`;
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    // Lancer la génération au chargement
+    window.onload = newAnalyticExercise;
+
+  </script>
+</body>
+</html>
