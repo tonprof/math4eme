@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPES de Hesbaye - UAA4: Fonctions de référence – LIBOY D.</title>
+  
+  <!-- MathJax pour l'affichage des formules mathématiques -->
+  <script>
+      window.MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']],
+              displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+      };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+:root{
+  --bg1:#0f172a; --bg2:#1d4ed8; --bg3:#7c3aed;
+  --card:#ffffffee; --text:#14213d; --muted:#475569;
+  --accent:#f97316; --accent2:#14b8a6; --ok:#16a34a; --bad:#dc2626;
+  --shadow:0 18px 40px rgba(15,23,42,.18);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  min-height:100vh;
+}
+.container{width:min(1180px,92vw); margin:0 auto; padding:26px 0 40px}
+.hero{
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.16);
+  color:white; border-radius:30px; padding:28px; box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);
+}
+.hero h1{margin:0 0 10px; font-size:clamp(1.8rem,4vw,3rem)}
+.hero p{margin:.35rem 0; line-height:1.6}
+.subtitle{opacity:.92}
+.card{
+  background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow);
+  margin-bottom: 24px;
+}
+.card h2,.card h3{margin-top:0}
+.badge{display:inline-block; padding:6px 12px; border-radius:999px; font-weight:bold; font-size:.85rem; color:white; background:linear-gradient(90deg,var(--accent),#fb7185)}
+.topbar{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:18px}
+.back-btn,.btn{
+  border:none; cursor:pointer; border-radius:999px; padding:12px 18px; font-weight:700;
+  background:linear-gradient(90deg,var(--accent),#fb7185); color:white; box-shadow:var(--shadow); text-decoration:none;
+}
+.btn.alt{background:linear-gradient(90deg,var(--accent2),#38bdf8)}
+.btn.dark{background:linear-gradient(90deg,#334155,#0f172a)}
+.btn.ghost{background:#eef2ff; color:#1e293b; box-shadow:none; border:1px solid #cbd5e1; transition: all 0.2s;}
+.btn.ghost:hover{background:#e0e7ff;}
+.btn.solution{background:linear-gradient(90deg, #8b5cf6, #d946ef);}
+.actions{display:flex; flex-wrap:wrap; gap:10px; margin-top: 20px;}
+
+input[type="number"]{
+  width: 80px; padding:10px; border:1px solid #cbd5e1; border-radius:10px; font-size:1.1rem; font-weight: bold; text-align: center;
+}
+label{font-weight:700; margin:.3rem 0; color:#1e293b}
+small,.muted{color:var(--muted)}
+
+details{background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:12px 14px; margin-bottom: 12px;}
+details summary{cursor:pointer; font-weight:700}
+
+.exercise-block{border:1px solid #e2e8f0; border-radius:18px; padding:20px; background:#fff; margin-top: 18px;}
+
+/* Section Coefficients */
+.coef-container {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.coef-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Zone du graphique */
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+canvas {
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    border: 2px solid #cbd5e1;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    max-width: 100%;
+    height: auto;
+}
+
+/* Boutons de fonctions */
+.toggles-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+.func-btn {
+    border: 2px solid transparent;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #f8fafc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.func-btn span.math-wrapper {
+    pointer-events: none; /* Empêche MathJax de bloquer le clic */
+}
+/* Couleurs des fonctions actives */
+.func-btn.active.f-affine { background: #dbeafe; border-color: #2563eb; color: #1e40af; }
+.func-btn.active.f-carre { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
+.func-btn.active.f-inverse { background: #dcfce7; border-color: #16a34a; color: #166534; }
+.func-btn.active.f-racine { background: #f3e8ff; border-color: #9333ea; color: #6b21a8; }
+.func-btn.active.f-cube { background: #ffedd5; border-color: #ea580c; color: #9a3412; }
+
+/* Indicateurs de couleur (les petits points) */
+.color-dot {
+    width: 12px; height: 12px; border-radius: 50%; display: inline-block;
+    opacity: 0.3; transition: opacity 0.2s;
+}
+.func-btn.active .color-dot { opacity: 1; }
+.f-affine .color-dot { background: #2563eb; }
+.f-carre .color-dot { background: #dc2626; }
+.f-inverse .color-dot { background: #16a34a; }
+.f-racine .color-dot { background: #9333ea; }
+.f-cube .color-dot { background: #ea580c; }
+
+
+.footer-note{color:white; opacity:.9; text-align:center; padding:10px}
+ul.tight li{margin:.45rem 0}
+
+.tabs { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 6px; }
+.tab { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: bold; white-space: nowrap; transition: all 0.2s; backdrop-filter: blur(10px); }
+.tab:hover { background: rgba(255, 255, 255, 0.25); }
+.tab.active { background: white; color: var(--text); box-shadow: var(--shadow); }
+
+@media print{
+  body{background:white}
+  .hero{color:#111; background:#fff; border:1px solid #ddd; box-shadow:none}
+  .back-btn,.actions,.footer-note,.tabs{display:none!important}
+  .card{box-shadow:none; border:1px solid #ddd}
+  .container{width:100%; padding:0}
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <a class="back-btn" href="../index.html">⟵ Retour à l'accueil</a>
+      <!-- Couleur du badge adaptée pour l'UAA4 (Ambre/Orange) -->
+      <span class="badge" style="background: linear-gradient(90deg, #f59e0b, #d97706)">UAA4</span>
+    </div>
+
+    <section class="hero">
+      <h2>IPES DE HESBAYE - MATHEMATIQUES (5H) - 4TT</h2>
+      <h2>CHAPITRE 4: Fonctions de référence</h2>
+      <p>LIBOY D.</p>
+    </section>
+    
+    <br>
+    <nav class="tabs">
+      <a href="uaa4.html" class="tab active">Explorateur de graphes</a>
+    </nav>
+
+    <section class="card">
+      <h2>Tracé dynamique des fonctions</h2>
+      <p>Modifiez les coefficients $a$, $b$, et $c$ puis activez les fonctions que vous souhaitez visualiser sur le repère cartésien. Cela vous permet d'observer l'impact de chaque paramètre sur l'allure des différentes familles de fonctions.</p>
+      
+      <div class="exercise-block">
+        
+        <!-- Coefficients -->
+        <div class="coef-container">
+            <div class="coef-box">
+                <label>Paramètre $a =$</label>
+                <input type="number" id="val_a" value="1" step="0.5" oninput="drawGraph()">
+            </div>
+            <div class="coef-box">
+                <label>Paramètre $b =$</label>
+                <input type="number" id="val_b" value="0" step="0.5" oninput="drawGraph()">
+            </div>
+            <div class="coef-box">
+                <label>Paramètre $c =$</label>
+                <input type="number" id="val_c" value="0" step="0.5" oninput="drawGraph()">
+            </div>
+        </div>
+
+        <div class="graph-container">
+            <!-- Boutons de sélection -->
+            <div class="toggles-grid">
+                <button class="func-btn f-affine" onclick="toggleFunc('affine', this)">
+                    <span class="color-dot"></span>
+                    <span class="math-wrapper">Affine ($ax + b$)</span>
+                </button>
+                <button class="func-btn f-carre" onclick="toggleFunc('carre', this)">
+                    <span class="color-dot"></span>
+                    <span class="math-wrapper">Second degré ($ax^2 + bx + c$)</span>
+                </button>
+                <button class="func-btn f-inverse" onclick="toggleFunc('inverse', this)">
+                    <span class="color-dot"></span>
+                    <span class="math-wrapper">Inverse ($a/x$)</span>
+                </button>
+                <button class="func-btn f-racine" onclick="toggleFunc('racine', this)">
+                    <span class="color-dot"></span>
+                    <span class="math-wrapper">Racine carrée ($a\sqrt{x}$)</span>
+                </button>
+                <button class="func-btn f-cube" onclick="toggleFunc('cube', this)">
+                    <span class="color-dot"></span>
+                    <span class="math-wrapper">Cubique ($ax^3$)</span>
+                </button>
+            </div>
+
+            <!-- Canvas pour le graphique -->
+            <canvas id="graphCanvas" width="600" height="400"></canvas>
+        </div>
+      </div>
+      
+      <div class="actions" style="justify-content: center; margin-top: 24px;">
+        <button class="btn ghost" onclick="resetGraph()">Réinitialiser les paramètres</button>
+      </div>
+
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>🧭 Rappel sur le rôle des paramètres</summary>
+        <ul class="tight" style="margin-top: 10px;">
+          <li><strong>Le paramètre $a$</strong> : Il influence "l'inclinaison" ou "l'ouverture" du graphique. S'il est négatif, il crée une symétrie orthogonale (un renversement) par rapport à l'axe X.</li>
+          <li><strong>Le paramètre $b$</strong> : Dans une fonction affine, c'est l'ordonnée à l'origine (le croisement avec l'axe Y). Dans le second degré, il déplace le sommet.</li>
+          <li><strong>Le paramètre $c$</strong> : Dans la parabole ($ax^2 + bx + c$), c'est l'ordonnée à l'origine (le point d'intersection avec l'axe Y).</li>
+        </ul>
+      </details>
+    </section>
+
+    <p class="footer-note">&copy; 2026 LIBOY D. / IPES de Hesbaye / Plateforme éducative interactive</p>
+  </div>
+
+  <script>
+    // État des fonctions affichées
+    const visibleFunctions = {
+        affine: false,
+        carre: false,
+        inverse: false,
+        racine: false,
+        cube: false
+    };
+
+    function toggleFunc(funcName, btnElement) {
+        visibleFunctions[funcName] = !visibleFunctions[funcName];
+        if (visibleFunctions[funcName]) {
+            btnElement.classList.add('active');
+        } else {
+            btnElement.classList.remove('active');
+        }
+        drawGraph();
+    }
+
+    function getCoefs() {
+        return {
+            a: parseFloat(document.getElementById('val_a').value) || 0,
+            b: parseFloat(document.getElementById('val_b').value) || 0,
+            c: parseFloat(document.getElementById('val_c').value) || 0
+        };
+    }
+
+    function resetGraph() {
+        document.getElementById('val_a').value = 1;
+        document.getElementById('val_b').value = 0;
+        document.getElementById('val_c').value = 0;
+        drawGraph();
+    }
+
+    function drawAxes(ctx, w, h, scale) {
+        ctx.clearRect(0, 0, w, h);
+        
+        // Dessiner la grille
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for(let x = 0; x <= w; x += scale) {
+            ctx.moveTo(x, 0); ctx.lineTo(x, h);
+        }
+        for(let y = 0; y <= h; y += scale) {
+            ctx.moveTo(0, y); ctx.lineTo(w, y);
+        }
+        ctx.stroke();
+
+        // Axes principaux
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); // Axe X
+        ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); // Axe Y
+        ctx.stroke();
+
+        // Graduations (sur les axes)
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for(let x = 0; x <= w; x += scale*2) { // Graduation tous les 2 unités pour aérer
+            const val = (x - w/2)/scale;
+            if (val !== 0) {
+                ctx.fillRect(x, h/2 - 3, 2, 6);
+                ctx.fillText(val, x, h/2 + 6);
+            }
+        }
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for(let y = 0; y <= h; y += scale*2) {
+            const val = -(y - h/2)/scale;
+            if (val !== 0) {
+                ctx.fillRect(w/2 - 3, y, 6, 2);
+                ctx.fillText(val, w/2 - 6, y);
+            }
+        }
+    }
+
+    function plot(ctx, f, color) {
+        const canvas = ctx.canvas;
+        const w = canvas.width;
+        const h = canvas.height;
+        const scale = 25; // Zoom : 1 unité = 25 pixels
+        
+        ctx.strokeStyle = color; 
+        ctx.lineWidth = 3; 
+        ctx.beginPath();
+        
+        let started = false;
+        // On dessine point par point (pixel par pixel sur la largeur)
+        for (let px = 0; px <= w; px++) {
+            const x = (px - w/2) / scale;
+            const y = f(x);
+            
+            // Éviter les asymptotes verticales aberrantes ou les valeurs hors domaine (comme la racine carrée)
+            if (!Number.isFinite(y) || isNaN(y) || Math.abs(y) > 100) { 
+                started = false; 
+                continue; 
+            }
+            
+            const py = h/2 - y * scale;
+            
+            if (!started) { 
+                ctx.moveTo(px, py); 
+                started = true; 
+            } else { 
+                // Petite sécurité pour éviter un trait vertical continu lors de l'asymptote de l'inverse (a/x)
+                if(Math.abs(y - f((px - 1 - w/2)/scale)) > 20) {
+                    ctx.moveTo(px, py);
+                } else {
+                    ctx.lineTo(px, py); 
+                }
+            }
+        }
+        ctx.stroke();
+    }
+
+    function drawGraph() {
+        const c = document.getElementById('graphCanvas');
+        const ctx = c.getContext('2d');
+        const w = c.width;
+        const h = c.height;
+        const scale = 25; // 25 pixels pour 1 unité
+        
+        const {a, b, c: cc} = getCoefs();
+        
+        drawAxes(ctx, w, h, scale);
+        
+        // Tracé selon les boutons actifs
+        if (visibleFunctions.affine) {
+            plot(ctx, x => a * x + b, '#2563eb'); // Bleu
+        }
+        if (visibleFunctions.carre) {
+            plot(ctx, x => a * Math.pow(x, 2) + b * x + cc, '#dc2626'); // Rouge
+        }
+        if (visibleFunctions.inverse) {
+            plot(ctx, x => a / x, '#16a34a'); // Vert
+        }
+        if (visibleFunctions.racine) {
+            plot(ctx, x => {
+                if (x < 0) return NaN; // Domaine de définition
+                return a * Math.sqrt(x);
+            }, '#9333ea'); // Violet
+        }
+        if (visibleFunctions.cube) {
+            plot(ctx, x => a * Math.pow(x, 3), '#ea580c'); // Orange
+        }
+    }
+
+    // Initialisation au chargement
+    window.onload = function() {
+        drawGraph();
+    };
+  </script>
+</body>
+</html>
