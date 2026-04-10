@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPES de Hesbaye - UAA2: Géométrie dans l'espace – LIBOY D.</title>
+  
+  <!-- Tailwind CSS pour les composants interactifs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- MathJax pour l'affichage des formules mathématiques -->
+  <script>
+      window.MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']],
+              displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: { fontCache: 'global' }
+      };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* ----- THEME UAA2 ORIGINAL ----- */
+    :root{
+      --bg1:#0f172a; --bg2:#1d4ed8; --bg3:#7c3aed;
+      --card:#ffffffee; --text:#14213d; --muted:#475569;
+      --accent:#f97316; --accent2:#14b8a6; --ok:#16a34a; --bad:#dc2626;
+      --shadow:0 18px 40px rgba(15,23,42,.18);
+      --radius:22px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+      min-height: 100vh;
+    }
+    .main-container { width: min(1180px, 92vw); margin: 0 auto; padding: 26px 0 40px; }
+    
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+      border: 1px solid rgba(255,255,255,.16);
+      color: white; border-radius: 30px; padding: 28px; box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .hero h1 { margin: 0 0 10px; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: bold; }
+    .hero h2 { margin: 0 0 8px; font-size: 1.5rem; font-weight: bold; }
+    .hero p { margin: .35rem 0; line-height: 1.6; }
+    
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    
+    .badge { display: inline-block; padding: 6px 12px; border-radius: 999px; font-weight: bold; font-size: .85rem; color: white; background: linear-gradient(90deg, #14b8a6, #0d9488); }
+    .topbar { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 18px; }
+    
+    .btn {
+      border: none; cursor: pointer; border-radius: 999px; padding: 12px 24px; font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), #fb7185); color: white; box-shadow: var(--shadow); text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+    .btn.alt { background: linear-gradient(90deg, var(--accent2), #38bdf8); }
+    .btn.solution { background: linear-gradient(90deg, #8b5cf6, #d946ef); }
+    .btn.ghost { background: #eef2ff; color: #1e293b; box-shadow: none; border: 1px solid #cbd5e1; }
+    
+    .footer-note { color: white; opacity: .9; text-align: center; padding: 10px; }
+    
+    .tabs { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 6px; }
+    .tab-btn { 
+        background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); 
+        color: white; padding: 10px 20px; border-radius: 999px; font-weight: bold; 
+        white-space: nowrap; transition: all 0.2s; backdrop-filter: blur(10px); cursor: pointer;
+    }
+    .tab-btn:hover { background: rgba(255, 255, 255, 0.25); }
+    .tab-btn.active { background: white; color: var(--text); box-shadow: var(--shadow); }
+
+    /* ----- LOGIQUE SPA ET INTERACTIVITÉ ----- */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .svg-step { opacity: 0; transition: opacity 0.6s ease-in-out; }
+    .svg-step.visible { opacity: 1; }
+    .scenario-container { display: none; }
+    .scenario-container.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="topbar">
+      <a class="btn ghost" style="background: rgba(255,255,255,0.2); color: white; border: none; backdrop-filter: blur(5px);" href="../index.html">⟵ Retour à l'accueil</a>
+      <span class="badge">UAA2</span>
+    </div>
+
+    <section class="hero">
+     <h2>IPES DE HESBAYE - MATHEMATIQUES (5H) - 4TT</h2>
+             <h2>CHAPITRE 1: Géométrie dans l'espace</h2>
+             <p>LIBOY D.</p>
+    </section>
+    
+    <br>
+    <!-- Navigation par Onglets (SPA) -->
+    <nav class="tabs">
+      <button onclick="switchTab('methodo')" id="btn-methodo" class="tab-btn active">Méthodologie</button>
+      <button onclick="switchTab('persp')" id="btn-persp" class="tab-btn">Perspective cavalière</button>
+      <button onclick="switchTab('exercice')" id="btn-exercice" class="tab-btn">Exercices</button>
+      <button onclick="switchTab('videos')" id="btn-videos" class="tab-btn">Vidéos</button>
+    </nav>
+
+    <!-- ONGLET 1 : MÉTHODOLOGIE -->
+    <section id="methodo" class="tab-content active">
+      
+      <!-- Bloc Théorie -->
+      <div class="card">
+        <h2 class="text-2xl font-bold text-indigo-900 mb-6 border-b pb-2">Les 3 règles fondamentales</h2>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-blue-50 p-6 rounded-lg border-t-4 border-blue-500 shadow-sm">
+                <h3 class="font-bold text-lg mb-3 text-blue-800">1. Règle de Coplanarité</h3>
+                <p class="text-sm text-slate-700">Si deux points appartiennent à la même face du cube, le segment qui les relie fait partie de la section.</p>
+                <div class="mt-4 p-2 bg-white rounded text-center text-sm font-mono border">
+                    $A \in \alpha$ et $B \in \alpha \Rightarrow [AB] \subset \alpha$
+                </div>
+            </div>
+            
+            <div class="bg-emerald-50 p-6 rounded-lg border-t-4 border-emerald-500 shadow-sm">
+                <h3 class="font-bold text-lg mb-3 text-emerald-800">2. Règle du Parallélisme</h3>
+                <p class="text-sm text-slate-700">Si deux plans sont parallèles (ex: faces opposées du cube), alors tout plan sécant les coupe selon des <strong>droites parallèles</strong>.</p>
+                <div class="mt-4 p-2 bg-white rounded text-center text-sm font-mono border">
+                    $\alpha \parallel \beta \Rightarrow (\gamma \cap \alpha) \parallel (\gamma \cap \beta)$
+                </div>
+            </div>
+
+            <div class="bg-amber-50 p-6 rounded-lg border-t-4 border-amber-500 shadow-sm">
+                <h3 class="font-bold text-lg mb-3 text-amber-800">3. Règle du point de percée</h3>
+                <p class="text-sm text-slate-700">On peut prolonger une droite de la section et une arête de la même face pour trouver un point d'intersection à l'extérieur du cube, servant de "pont" vers une autre face.</p>
+            </div>
+        </div>
+      </div>
+
+      <!-- Bloc Algorithme -->
+      <div class="card">
+        <h2 class="text-2xl font-bold text-indigo-900 mb-6 border-b pb-2">L'Algorithme de résolution pas-à-pas</h2>
+        <div class="relative border-l-4 border-indigo-300 ml-4 py-2 space-y-8">
+            
+            <div class="relative pl-8">
+                <div class="absolute -left-3.5 top-0 bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                <h3 class="font-bold text-lg text-slate-800">Relier les évidences</h3>
+                <p class="text-slate-600 mt-1">Cherchez les paires de points qui sont sur la même face et reliez-les. C'est toujours la première étape.</p>
+            </div>
+
+            <div class="relative pl-8">
+                <div class="absolute -left-3.5 top-0 bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                <h3 class="font-bold text-lg text-slate-800">Appliquer le parallélisme (Le raccourci)</h3>
+                <p class="text-slate-600 mt-1">Regardez la face opposée à celle où vous venez de tracer un segment. Avez-vous un point sur cette face opposée ? Si oui, tracez une ligne parallèle passant par ce point !</p>
+            </div>
+
+            <div class="relative pl-8">
+                <div class="absolute -left-3.5 top-0 bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                <h3 class="font-bold text-lg text-slate-800">Utiliser les prolongements (Si nécessaire)</h3>
+                <p class="text-slate-600 mt-1">Si le parallélisme ne vous aide pas, prolongez votre segment et les arêtes de sa face pour générer de nouveaux points de rencontre (point de percée, point de fuite ou traces du plan).</p>
+            </div>
+
+            <div class="relative pl-8">
+                <div class="absolute -left-3.5 top-0 bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm">4</div>
+                <h3 class="font-bold text-lg text-slate-800">Fermer la section</h3>
+                <p class="text-slate-600 mt-1">La section finale doit obligatoirement être un polygone fermé (Triangle, Quadrilatère, Pentagone ou Hexagone) dont tous les sommets sont situés exactement sur les arêtes du cube.</p>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ONGLET 2 : PERSPECTIVE CAVALIÈRE -->
+    <section id="persp" class="tab-content card">
+        <h2 class="text-3xl font-bold text-indigo-900 mb-6 border-b pb-2">La Perspective Cavalière</h2>
+        
+        <div class="text-left max-w-4xl mx-auto space-y-8 mt-6">
+            <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 shadow-sm">
+                <h3 class="text-xl font-bold text-indigo-800 mb-3">Définition</h3>
+                <p class="text-slate-700 leading-relaxed">
+                    La perspective cavalière est une technique de représentation plane (en 2D) d'un objet de l'espace (en 3D). Elle permet de conserver visuellement certaines propriétés géométriques de l'objet tout en offrant une vue tridimensionnelle facile à tracer, très utilisée en mathématiques.
+                </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-bold text-indigo-800 mb-4">Règles de tracé et Propriétés</h3>
+                <ul class="list-disc pl-6 space-y-4 text-slate-700">
+                    <li><strong>Faces frontales :</strong> Les figures situées dans des plans frontaux (face à l'observateur) sont représentées en vraie grandeur. Les longueurs, les angles et les aires sont parfaitement conservés.</li>
+                    <li><strong>Fuyantes :</strong> Les droites perpendiculaires au plan frontal dans la réalité sont représentées sur le dessin par des droites obliques appelées <em>fuyantes</em>. Elles sont toutes inclinées d'un même angle constant par rapport à l'horizontale, appelé <strong>l'angle de fuite ($\alpha$)</strong>.</li>
+                    <li><strong>Rapport de réduction :</strong> Les longueurs réelles portées sur les fuyantes ne sont pas en vraie grandeur sur le dessin. Elles sont multipliées par un coefficient constant appelé <strong>rapport de réduction ($k$)</strong>. Par exemple, si $k = 0,5$, une arête de 4 cm en profondeur sera dessinée avec une longueur de 2 cm.</li>
+                    <li><strong>Parallélisme :</strong> Des droites parallèles dans la réalité restent strictement parallèles sur le dessin.</li>
+                    <li><strong>Alignement et Milieux :</strong> Des points alignés dans l'espace restent alignés sur le dessin. Le milieu d'un segment reste le milieu de sa représentation.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ONGLET 3 : EXERCICES INTERACTIFS -->
+    <section id="exercice" class="tab-content card">
+        
+        <!-- Contrôleur de Scénarios -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 mb-8 flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm">
+            <div>
+                <h3 class="font-bold text-xl text-indigo-900" id="scenario-title">Scénario Actuel</h3>
+                <p class="text-sm text-indigo-700 mt-1" id="scenario-focus">Focus: ...</p>
+            </div>
+            <button onclick="toggleScenario()" class="btn alt flex items-center">
+                <span class="mr-2 text-xl">🎲</span> Cas suivant
+            </button>
+        </div>
+
+        <div class="grid lg:grid-cols-5 gap-8">
+            <!-- Zone Visuelle (Cube SVG) -->
+            <div class="lg:col-span-3 bg-slate-50 border border-slate-200 rounded-2xl shadow-inner p-6 flex flex-col items-center justify-center min-h-[500px]">
+                <div class="w-full max-w-md relative overflow-visible">
+                    
+                    <!-- SCÉNARIO 1 : Pentagone (Percée) -->
+                    <div id="svg-scenario-1" class="scenario-container active w-full h-auto">
+                        <!-- ViewBox élargie à gauche pour bien voir le point de percée L (-45) -->
+                        <svg viewBox="-60 -60 340 300" class="w-full h-auto overflow-visible">
+                            <!-- BASE CUBE EXACTE -->
+                            <g class="cube-base">
+                                <path d="M 50 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" /> <!-- AD -->
+                                <path d="M 250 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" /> <!-- CD -->
+                                <path d="M 150 0 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />   <!-- HD -->
+                                <path d="M 50 150 L 150 200 L 250 150" stroke="#1e293b" stroke-width="2" fill="none" stroke-linejoin="round"/> <!-- ABC -->
+                                <path d="M 50 50 L 150 100 L 250 50 L 150 0 Z" stroke="#1e293b" stroke-width="2" fill="rgba(255, 255, 255, 0.7)" stroke-linejoin="round"/> <!-- EFGH -->
+                                <path d="M 50 150 L 50 50" stroke="#1e293b" stroke-width="2" fill="none"/> <!-- AE -->
+                                <path d="M 150 200 L 150 100" stroke="#1e293b" stroke-width="2" fill="none"/> <!-- BF -->
+                                <path d="M 250 150 L 250 50" stroke="#1e293b" stroke-width="2" fill="none"/> <!-- CG -->
+                                <!-- Labels -->
+                                <text x="35" y="160" fill="#64748b" font-size="12">A</text>
+                                <text x="145" y="215" fill="#64748b" font-size="12">B</text>
+                                <text x="255" y="160" fill="#64748b" font-size="12">C</text>
+                                <text x="155" y="110" fill="#94a3b8" font-size="12">D</text>
+                                <text x="35" y="55" fill="#64748b" font-size="12">E</text>
+                                <text x="145" y="115" fill="#64748b" font-size="12">F</text>
+                                <text x="255" y="55" fill="#64748b" font-size="12">G</text>
+                                <text x="145" y="-5" fill="#64748b" font-size="12">H</text>
+                            </g>
+                            
+                            <!-- Coordonnées Mathématiques EXACTES
+                                 I plus proche de H -> I = (115, 17.5)
+                                 J plus proche de E -> J = (75, 62.5)
+                                 K milieu de CG -> (250, 100)
+                            -->
+                            <g id="s1_step0">
+                                <circle cx="115" cy="17.5" r="5" fill="#4f46e5"/><text x="105" y="12" fill="#4f46e5" font-weight="bold" font-size="16">I</text>
+                                <circle cx="75" cy="62.5" r="5" fill="#4f46e5"/><text x="60" y="60" fill="#4f46e5" font-weight="bold" font-size="16">J</text>
+                                <circle cx="250" cy="100" r="5" fill="#4f46e5"/><text x="260" y="105" fill="#4f46e5" font-weight="bold" font-size="16">K</text>
+                            </g>
+                            <g id="s1_step1" class="svg-step"><line x1="115" y1="17.5" x2="75" y2="62.5" stroke="#ef4444" stroke-width="3"/></g>
+                            <g id="s1_step2" class="svg-step">
+                                <!-- L = (-45, 197.5) intersection IJ et FG -->
+                                <line x1="75" y1="62.5" x2="-45" y2="197.5" stroke="#ef4444" stroke-dasharray="4" stroke-width="1.5"/>
+                                <line x1="150" y1="100" x2="-45" y2="197.5" stroke="#3b82f6" stroke-dasharray="4" stroke-width="1.5"/>
+                                <circle cx="-45" cy="197.5" r="4" fill="#000"/><text x="-60" y="205" fill="#000" font-weight="bold" font-size="14">L</text>
+                            </g>
+                            <g id="s1_step3" class="svg-step">
+                                <!-- M = (150, 133.05) intersection LK et BF -->
+                                <line x1="-45" y1="197.5" x2="250" y2="100" stroke="#22c55e" stroke-dasharray="4" stroke-width="1.5"/>
+                                <circle cx="150" cy="133.05" r="5" fill="#ef4444"/><text x="160" y="140" fill="#ef4444" font-weight="bold" font-size="14">M</text>
+                            </g>
+                            <g id="s1_step4" class="svg-step">
+                                <line x1="75" y1="62.5" x2="150" y2="133.05" stroke="#ef4444" stroke-width="3"/>
+                                <line x1="150" y1="133.05" x2="250" y2="100" stroke="#ef4444" stroke-width="3"/>
+                            </g>
+                            <g id="s1_step5" class="svg-step">
+                                <!-- Parallèle à JM passant par K -> coupe DH en Q(150,5.93) -->
+                                <line x1="250" y1="100" x2="150" y2="5.93" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="2"/>
+                                <circle cx="150" cy="5.93" r="5" fill="#f59e0b"/><text x="160" y="10" fill="#f59e0b" font-weight="bold" font-size="14">Q</text>
+                            </g>
+                            <g id="s1_step6" class="svg-step">
+                                <line x1="250" y1="100" x2="150" y2="5.93" stroke="#ef4444" stroke-width="3"/>
+                                <line x1="150" y1="5.93" x2="115" y2="17.5" stroke="#ef4444" stroke-width="3"/>
+                            </g>
+                            <g id="s1_step7" class="svg-step">
+                                <polygon points="115,17.5 75,62.5 150,133.05 250,100 150,5.93" fill="rgba(239, 68, 68, 0.2)" stroke="none"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- SCÉNARIO 2 : Parallélogramme (Parallèles) -->
+                    <div id="svg-scenario-2" class="scenario-container w-full h-auto">
+                        <svg viewBox="-20 -60 320 300" class="w-full h-auto overflow-visible">
+                            <g class="cube-base">
+                                <path d="M 50 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 250 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 150 0 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 50 150 L 150 200 L 250 150" stroke="#1e293b" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                                <path d="M 50 50 L 150 100 L 250 50 L 150 0 Z" stroke="#1e293b" stroke-width="2" fill="rgba(255, 255, 255, 0.7)" stroke-linejoin="round"/>
+                                <path d="M 50 150 L 50 50" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <path d="M 150 200 L 150 100" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <path d="M 250 150 L 250 50" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <text x="35" y="160" fill="#64748b" font-size="12">A</text>
+                                <text x="145" y="215" fill="#64748b" font-size="12">B</text>
+                                <text x="255" y="160" fill="#64748b" font-size="12">C</text>
+                                <text x="155" y="110" fill="#94a3b8" font-size="12">D</text>
+                                <text x="35" y="55" fill="#64748b" font-size="12">E</text>
+                                <text x="145" y="115" fill="#64748b" font-size="12">F</text>
+                                <text x="255" y="55" fill="#64748b" font-size="12">G</text>
+                                <text x="145" y="-5" fill="#64748b" font-size="12">H</text>
+                            </g>
+                            
+                            <!-- Coordonnées Mathématiques EXACTES
+                                 I sur AE(50,50 à 50,150) -> (50, 75)
+                                 J sur BF(150,100 à 150,200) -> (150, 150)
+                                 K sur CG(250,50 à 250,150) -> (250, 125)
+                            -->
+                            <g id="s2_step0">
+                                <circle cx="50" cy="75" r="5" fill="#4f46e5"/><text x="35" y="80" fill="#4f46e5" font-weight="bold" font-size="16">I</text>
+                                <circle cx="150" cy="150" r="5" fill="#4f46e5"/><text x="135" y="160" fill="#4f46e5" font-weight="bold" font-size="16">J</text>
+                                <circle cx="250" cy="125" r="5" fill="#4f46e5"/><text x="260" y="130" fill="#4f46e5" font-weight="bold" font-size="16">K</text>
+                            </g>
+                            <g id="s2_step1" class="svg-step">
+                                <line x1="50" y1="75" x2="150" y2="150" stroke="#ef4444" stroke-width="3"/>
+                            </g>
+                            <g id="s2_step2" class="svg-step">
+                                <line x1="150" y1="150" x2="250" y2="125" stroke="#ef4444" stroke-width="3"/>
+                            </g>
+                            <g id="s2_step3" class="svg-step">
+                                <!-- Parallèle L sur DH: (150, 50) -->
+                                <line x1="50" y1="75" x2="150" y2="50" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="2"/>
+                                <circle cx="150" cy="50" r="5" fill="#f59e0b"/><text x="160" y="45" fill="#f59e0b" font-weight="bold" font-size="16">L</text>
+                            </g>
+                            <g id="s2_step4" class="svg-step">
+                                <line x1="250" y1="125" x2="150" y2="50" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="2"/>
+                            </g>
+                            <g id="s2_step5" class="svg-step">
+                                <line x1="50" y1="75" x2="150" y2="50" stroke="#ef4444" stroke-width="3" stroke-dasharray="none"/>
+                                <line x1="250" y1="125" x2="150" y2="50" stroke="#ef4444" stroke-width="3" stroke-dasharray="none"/>
+                                <polygon points="50,75 150,150 250,125 150,50" fill="rgba(239, 68, 68, 0.2)" stroke="none"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- SCÉNARIO 3 : Pentagone Complexe (Percée + Parallèles) -->
+                    <div id="svg-scenario-3" class="scenario-container w-full h-auto">
+                        <svg viewBox="-20 -60 320 300" class="w-full h-auto overflow-visible">
+                            <g class="cube-base">
+                                <path d="M 50 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 250 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 150 0 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 50 150 L 150 200 L 250 150" stroke="#1e293b" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                                <path d="M 50 50 L 150 100 L 250 50 L 150 0 Z" stroke="#1e293b" stroke-width="2" fill="rgba(255, 255, 255, 0.7)" stroke-linejoin="round"/>
+                                <path d="M 50 150 L 50 50" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <path d="M 150 200 L 150 100" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <path d="M 250 150 L 250 50" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <text x="35" y="160" fill="#64748b" font-size="12">A</text>
+                                <text x="145" y="215" fill="#64748b" font-size="12">B</text>
+                                <text x="255" y="160" fill="#64748b" font-size="12">C</text>
+                                <text x="155" y="110" fill="#94a3b8" font-size="12">D</text>
+                                <text x="35" y="55" fill="#64748b" font-size="12">E</text>
+                                <text x="145" y="115" fill="#64748b" font-size="12">F</text>
+                                <text x="255" y="55" fill="#64748b" font-size="12">G</text>
+                                <text x="145" y="-5" fill="#64748b" font-size="12">H</text>
+                            </g>
+                            
+                            <!-- Coordonnées Mathématiques EXACTES
+                                 I sur EH -> (75, 37.5)
+                                 J sur FG -> (225, 62.5)
+                                 K milieu de AB -> (100, 175)
+                            -->
+                            <g id="s3_step0">
+                                <circle cx="75" cy="37.5" r="5" fill="#4f46e5"/><text x="60" y="30" fill="#4f46e5" font-weight="bold" font-size="16">I</text>
+                                <circle cx="225" cy="62.5" r="5" fill="#4f46e5"/><text x="235" y="60" fill="#4f46e5" font-weight="bold" font-size="16">J</text>
+                                <circle cx="100" cy="175" r="5" fill="#4f46e5"/><text x="85" y="185" fill="#4f46e5" font-weight="bold" font-size="16">K</text>
+                            </g>
+                            <g id="s3_step1" class="svg-step"><line x1="75" y1="37.5" x2="225" y2="62.5" stroke="#ef4444" stroke-width="3"/></g>
+                            <g id="s3_step2" class="svg-step">
+                                <!-- Percée L=(0, 25) avec l'arête EF (prolongée) -->
+                                <line x1="75" y1="37.5" x2="0" y2="25" stroke="#ef4444" stroke-dasharray="4" stroke-width="1.5"/>
+                                <line x1="50" y1="50" x2="0" y2="25" stroke="#3b82f6" stroke-dasharray="4" stroke-width="1.5"/>
+                                <circle cx="0" cy="25" r="4" fill="#000"/><text x="-15" y="25" fill="#000" font-weight="bold" font-size="14">L</text>
+                            </g>
+                            <g id="s3_step3" class="svg-step">
+                                <!-- L(0,25) à K(100,175) intersecte AE(x=50) en M(50,100) -->
+                                <line x1="0" y1="25" x2="100" y2="175" stroke="#22c55e" stroke-dasharray="4" stroke-width="1.5"/>
+                                <line x1="50" y1="100" x2="100" y2="175" stroke="#ef4444" stroke-width="3"/>
+                                <circle cx="50" cy="100" r="5" fill="#ef4444"/><text x="30" y="105" fill="#ef4444" font-weight="bold" font-size="14">M</text>
+                            </g>
+                            <g id="s3_step4" class="svg-step">
+                                <line x1="50" y1="100" x2="75" y2="37.5" stroke="#ef4444" stroke-width="3"/>
+                            </g>
+                            <g id="s3_step5" class="svg-step">
+                                <!-- Parallèle depuis J(225,62.5) coupe BC en N(175,187.5) -->
+                                <line x1="225" y1="62.5" x2="175" y2="187.5" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="2"/>
+                                <line x1="225" y1="62.5" x2="175" y2="187.5" stroke="#ef4444" stroke-width="3" stroke-dasharray="none"/>
+                                <circle cx="175" cy="187.5" r="5" fill="#ef4444"/><text x="185" y="195" fill="#ef4444" font-weight="bold" font-size="14">N</text>
+                            </g>
+                            <g id="s3_step6" class="svg-step">
+                                <line x1="100" y1="175" x2="175" y2="187.5" stroke="#ef4444" stroke-width="3"/>
+                                <polygon points="75,37.5 225,62.5 175,187.5 100,175 50,100" fill="rgba(239, 68, 68, 0.2)" stroke="none"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- SCÉNARIO 4 : L'Hexagone (Parallèles multiples) -->
+                    <div id="svg-scenario-4" class="scenario-container w-full h-auto">
+                        <svg viewBox="-20 -60 320 300" class="w-full h-auto overflow-visible">
+                            <g class="cube-base">
+                                <path d="M 50 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 250 150 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 150 0 L 150 100" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                                <path d="M 50 150 L 150 200 L 250 150" stroke="#1e293b" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                                <path d="M 50 50 L 150 100 L 250 50 L 150 0 Z" stroke="#1e293b" stroke-width="2" fill="rgba(255, 255, 255, 0.7)" stroke-linejoin="round"/>
+                                <path d="M 50 150 L 50 50" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <path d="M 150 200 L 150 100" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <path d="M 250 150 L 250 50" stroke="#1e293b" stroke-width="2" fill="none"/>
+                                <text x="35" y="160" fill="#64748b" font-size="12">A</text>
+                                <text x="145" y="215" fill="#64748b" font-size="12">B</text>
+                                <text x="255" y="160" fill="#64748b" font-size="12">C</text>
+                                <text x="155" y="110" fill="#94a3b8" font-size="12">D</text>
+                                <text x="35" y="55" fill="#64748b" font-size="12">E</text>
+                                <text x="145" y="115" fill="#64748b" font-size="12">F</text>
+                                <text x="255" y="55" fill="#64748b" font-size="12">G</text>
+                                <text x="145" y="-5" fill="#64748b" font-size="12">H</text>
+                            </g>
+                            
+                            <!-- Coordonnées Mathématiques EXACTES (Hexagone Régulier)
+                                 I milieu AB -> (100, 175)
+                                 J milieu BC -> (200, 175)
+                                 K milieu CG -> (250, 100)
+                            -->
+                            <g id="s4_step0">
+                                <circle cx="100" cy="175" r="5" fill="#4f46e5"/><text x="85" y="185" fill="#4f46e5" font-weight="bold" font-size="16">I</text>
+                                <circle cx="200" cy="175" r="5" fill="#4f46e5"/><text x="205" y="190" fill="#4f46e5" font-weight="bold" font-size="16">J</text>
+                                <circle cx="250" cy="100" r="5" fill="#4f46e5"/><text x="260" y="105" fill="#4f46e5" font-weight="bold" font-size="16">K</text>
+                            </g>
+                            <g id="s4_step1" class="svg-step"><line x1="100" y1="175" x2="200" y2="175" stroke="#ef4444" stroke-width="3"/></g>
+                            <g id="s4_step2" class="svg-step"><line x1="200" y1="175" x2="250" y2="100" stroke="#ef4444" stroke-width="3"/></g>
+                            <g id="s4_step3" class="svg-step">
+                                <!-- Parallèle JK passant par I -> coupe AE en N(50,100) -->
+                                <line x1="100" y1="175" x2="50" y2="100" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="2"/>
+                                <circle cx="50" cy="100" r="5" fill="#f59e0b"/><text x="30" y="105" fill="#f59e0b" font-weight="bold" font-size="16">N</text>
+                            </g>
+                            <g id="s4_step4" class="svg-step">
+                                <!-- Parallèle IN passant par K -> coupe GH en L(200,25) -->
+                                <line x1="250" y1="100" x2="200" y2="25" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="2"/>
+                                <circle cx="200" cy="25" r="5" fill="#f59e0b"/><text x="210" y="20" fill="#f59e0b" font-weight="bold" font-size="16">L</text>
+                            </g>
+                            <g id="s4_step5" class="svg-step">
+                                <!-- Parallèle IJ passant par L -> coupe EH en M(100,25) -->
+                                <line x1="200" y1="25" x2="100" y2="25" stroke="#f59e0b" stroke-dasharray="6,4" stroke-width="2"/>
+                                <circle cx="100" cy="25" r="5" fill="#f59e0b"/><text x="90" y="15" fill="#f59e0b" font-weight="bold" font-size="16">M</text>
+                            </g>
+                            <g id="s4_step6" class="svg-step">
+                                <line x1="100" y1="25" x2="50" y2="100" stroke="#ef4444" stroke-width="3"/>
+                                <line x1="100" y1="175" x2="50" y2="100" stroke="#ef4444" stroke-width="3"/>
+                                <line x1="250" y1="100" x2="200" y2="25" stroke="#ef4444" stroke-width="3"/>
+                                <line x1="200" y1="25" x2="100" y2="25" stroke="#ef4444" stroke-width="3"/>
+                                <polygon points="100,175 200,175 250,100 200,25 100,25 50,100" fill="rgba(239, 68, 68, 0.2)" stroke="none"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Zone Console / Explications -->
+            <div class="lg:col-span-2 flex flex-col">
+                <h3 class="text-xl font-bold text-indigo-900 mb-4 border-b pb-2">Guide de Résolution</h3>
+                
+                <div class="flex-grow bg-slate-50 rounded-2xl p-5 border border-slate-200 mb-6 text-slate-700 min-h-[260px] shadow-sm" id="ex-description">
+                    <!-- Rempli par JS -->
+                </div>
+
+                <div class="flex flex-col gap-3 mt-auto">
+                    <button onclick="nextStep()" id="btn-next" class="btn solution flex justify-center items-center w-full">
+                        Exécuter l'étape suivante <span class="ml-2 text-xl">▶</span>
+                    </button>
+                    <button onclick="resetExercise()" id="btn-reset" class="btn ghost flex justify-center items-center w-full hidden">
+                        Recommencer ce cas <span class="ml-2 text-xl">🔄</span>
+                    </button>
+                </div>
+                
+                <div class="mt-4 flex justify-between text-sm text-slate-500 font-bold px-2" id="step-counter">
+                    Étape 0 / X
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ONGLET 4 : VIDÉOS EXPLICATIVES -->
+    <section id="videos" class="tab-content card">
+        <h2 class="text-3xl font-bold text-indigo-900 mb-6 border-b pb-2">Vidéos Explicatives</h2>
+        <p class="text-slate-700 mb-8 text-lg">Retrouvez ci-dessous une sélection de vidéos pour revoir ou approfondir les techniques de tracé de sections dans les différents solides étudiés.</p>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Vidéo 1 -->
+            <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 shadow-sm flex flex-col transition hover:shadow-md">
+                <h3 class="font-bold text-indigo-900 mb-1 text-center text-lg">Yvan Monka</h3>
+                <p class="text-sm font-semibold text-slate-600 mb-4 text-center">Section dans le cube</p>
+                <div class="relative w-full overflow-hidden rounded-xl" style="padding-top: 56.25%;">
+                    <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/4y00KbuCpsc" title="Section dans le cube" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Vidéo 2 -->
+            <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 shadow-sm flex flex-col transition hover:shadow-md">
+                <h3 class="font-bold text-indigo-900 mb-1 text-center text-lg">Yvan Monka</h3>
+                <p class="text-sm font-semibold text-slate-600 mb-4 text-center">Section dans le pavé droit</p>
+                <div class="relative w-full overflow-hidden rounded-xl" style="padding-top: 56.25%;">
+                    <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/vgXcf3M0f9w" title="Section dans le pavé droit" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Vidéo 3 -->
+            <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 shadow-sm flex flex-col transition hover:shadow-md">
+                <h3 class="font-bold text-indigo-900 mb-1 text-center text-lg">Roland Vanderstraeten</h3>
+                <p class="text-sm font-semibold text-slate-600 mb-4 text-center">Section dans le cube</p>
+                <div class="relative w-full overflow-hidden rounded-xl" style="padding-top: 56.25%;">
+                    <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/9U0LfomR_Kk" title="Section dans le cube" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Vidéo 4 -->
+            <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 shadow-sm flex flex-col transition hover:shadow-md">
+                <h3 class="font-bold text-indigo-900 mb-1 text-center text-lg">Roland Vanderstraeten</h3>
+                <p class="text-sm font-semibold text-slate-600 mb-4 text-center">Section / Point de percée</p>
+                <div class="relative w-full overflow-hidden rounded-xl" style="padding-top: 56.25%;">
+                    <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/SkF3P7OPM2s" title="Section / Point de percée" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Vidéo 5 -->
+            <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 shadow-sm flex flex-col transition hover:shadow-md">
+                <h3 class="font-bold text-indigo-900 mb-1 text-center text-lg">Yvan Monka</h3>
+                <p class="text-sm font-semibold text-slate-600 mb-4 text-center">Section dans le tétraèdre</p>
+                <div class="relative w-full overflow-hidden rounded-xl" style="padding-top: 56.25%;">
+                    <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/TG-bVLDmAX4" title="Section dans le tétraèdre" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Vidéo 6 -->
+            <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 shadow-sm flex flex-col transition hover:shadow-md">
+                <h3 class="font-bold text-indigo-900 mb-1 text-center text-lg">Roland Vanderstraeten</h3>
+                <p class="text-sm font-semibold text-slate-600 mb-4 text-center">Section dans le tétraèdre</p>
+                <div class="relative w-full overflow-hidden rounded-xl" style="padding-top: 56.25%;">
+                    <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/HzkuYJyJ7lY" title="Section dans le tétraèdre" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <p class="footer-note">&copy; 2026 LIBOY D. / IPES de Hesbaye / Plateforme éducative interactive</p>
+  </div>
+
+  <script>
+    // --- GESTION DES ONGLETS (SPA) ---
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById(`btn-${tabId}`).classList.add('active');
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    // --- DONNÉES DES SCÉNARIOS (EXERCICES INTERACTIFS) ---
+    const scenarios = [
+        {
+            id: 's1',
+            title: "Cas N°1 : Le Pentagone",
+            focus: "Point de percée combiné au parallélisme",
+            initText: `
+                <p class="font-bold text-lg mb-2 text-indigo-900">Énoncé :</p>
+                <p>Soit le cube $ABCDEFGH$. On donne 3 points <strong>placés exactement sur les arêtes</strong> :</p>
+                <ul class="list-disc pl-5 mt-2 mb-4 space-y-1">
+                    <li>$I$ sur l'arête $[EH]$ (plus proche de $H$)</li>
+                    <li>$J$ sur l'arête $[EF]$ (plus proche de $E$)</li>
+                    <li>$K$ au milieu de $[CG]$</li>
+                </ul>
+                <p>Tracez la section du cube par le plan $(IJK)$.</p>`,
+            steps: [
+                { id: 's1_step1', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 1 : Coplanarité</h4><p>Les points $I$ et $J$ appartiennent à la face supérieure $(EFGH)$. On trace le segment $[IJ]$.</p>" },
+                { id: 's1_step2', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 2 : Projection / Percée</h4><p>On prolonge la droite $(IJ)$ et l'arête $(FG)$ de la face supérieure. Elles se croisent en un <strong>point de percée</strong> $L$, clairement situé à l'extérieur du cube.</p>" },
+                { id: 's1_step3', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 3 : Changement de face</h4><p>Le point $L$ est sur la droite $(FG)$, il appartient donc au plan de la face latérale droite $(BCGF)$. Le point $K$ y est aussi ! On trace la droite $(LK)$ qui coupe l'arête $[BF]$ en $M$.</p>" },
+                { id: 's1_step4', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 4 : Connexion</h4><p>On peut maintenant relier $M$ à $J$ (face avant) et $M$ à $K$ (face droite).</p>" },
+                { id: 's1_step5', text: "<h4 class='font-bold text-amber-600 mb-2'>Étape 5 : Parallélisme</h4><p>La face arrière $(CDHG)$ est parallèle à la face avant $(ABFE)$. L'intersection sur la face arrière passant par $K$ sera donc <strong>parallèle au segment $[JM]$</strong>. On trace cette parallèle depuis $K$, elle coupe $[DH]$ en $Q$.</p>" },
+                { id: 's1_step6', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 6 : Face gauche</h4><p>Les points $Q$ et $I$ se trouvent tous les deux sur la face gauche $(ADHE)$. On peut donc relier directement $Q$ à $I$.</p>" },
+                { id: 's1_step7', text: "<h4 class='font-bold text-emerald-600 mb-2'>Terminé ! 🎉</h4><p>La boucle est bouclée ! La section forme un superbe <strong>Pentagone</strong> tracé grâce à un point de percée puis en utilisant le parallélisme.</p>" }
+            ]
+        },
+        {
+            id: 's2',
+            title: "Cas N°2 : Le Parallélogramme",
+            focus: "Propriété des plans parallèles",
+            initText: `
+                <p class="font-bold text-lg mb-2 text-indigo-900">Énoncé :</p>
+                <p>Soit le cube $ABCDEFGH$. On donne 3 points <strong>placés exactement sur les arêtes</strong> :</p>
+                <ul class="list-disc pl-5 mt-2 mb-4 space-y-1">
+                    <li>$I$ au centre de l'arête $[AE]$</li>
+                    <li>$J$ sur l'arête $[BF]$</li>
+                    <li>$K$ au centre de l'arête $[CG]$</li>
+                </ul>
+                <p>Déterminez la section du cube par le plan $(IJK)$ en utilisant la règle du parallélisme.</p>`,
+            steps: [
+                { id: 's2_step1', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 1 : Coplanarité (Face avant)</h4><p>Les points $I$ et $J$ sont sur la face avant $(ABFE)$. On trace directement le segment $[IJ]$.</p>" },
+                { id: 's2_step2', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 2 : Coplanarité (Face droite)</h4><p>Les points $J$ et $K$ sont sur la face droite $(BCGF)$. On trace le segment $[JK]$.</p>" },
+                { id: 's2_step3', text: "<h4 class='font-bold text-amber-600 mb-2'>Étape 3 : Plans Parallèles (Gauche/Droite)</h4><p>La face gauche $(ADHE)$ est <strong>parallèle</strong> à la face droite $(BCGF)$. Le plan de section coupera donc la face gauche selon une droite <strong>parallèle à $(JK)$</strong>. On trace cette parallèle passant par $I$, elle coupe $[DH]$ en $L$.</p>" },
+                { id: 's2_step4', text: "<h4 class='font-bold text-amber-600 mb-2'>Étape 4 : Plans Parallèles (Avant/Arrière)</h4><p>La face arrière $(DCGH)$ est <strong>parallèle</strong> à la face avant $(ABFE)$. La section sur la face arrière sera <strong>parallèle à $(IJ)$</strong>. En traçant cette parallèle passant par $K$, on retombe exactement sur le point $L$ !</p>" },
+                { id: 's2_step5', text: "<h4 class='font-bold text-emerald-600 mb-2'>Terminé ! 🎉</h4><p>En reliant les points, la section obtenue est un <strong>Parallélogramme</strong> parfait.</p>" }
+            ]
+        },
+        {
+            id: 's3',
+            title: "Cas N°3 : Pentagone Complexe",
+            focus: "Combinaison Point de Percée + Parallélisme",
+            initText: `
+                <p class="font-bold text-lg mb-2 text-indigo-900">Énoncé :</p>
+                <p>Soit le cube $ABCDEFGH$. On donne 3 points <strong>placés exactement sur les arêtes</strong> :</p>
+                <ul class="list-disc pl-5 mt-2 mb-4 space-y-1">
+                    <li>$I$ sur l'arête $[EH]$</li>
+                    <li>$J$ sur l'arête $[FG]$</li>
+                    <li>$K$ au milieu de $[AB]$</li>
+                </ul>
+                <p>Déterminez la section du cube par le plan $(IJK)$.</p>`,
+            steps: [
+                { id: 's3_step1', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 1 : Face supérieure</h4><p>Les points $I$ et $J$ appartiennent tous deux à la face du haut $(EFGH)$. On trace le segment $[IJ]$.</p>" },
+                { id: 's3_step2', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 2 : Point de Percée</h4><p>Pour lier le haut avec le point $K$ en bas, on prolonge $[IJ]$ et l'arête $[EF]$ jusqu'à trouver le <strong>point de percée</strong> $L$.</p>" },
+                { id: 's3_step3', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 3 : Descente sur la face avant</h4><p>Les points $L$ et $K$ sont maintenant tous deux dans le plan de la face avant $(ABFE)$. On trace la droite $(LK)$ qui vient couper exactement au milieu de l'arête $[AE]$ en $M$.</p>" },
+                { id: 's3_step4', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 4 : Face gauche</h4><p>Les points $M$ et $I$ sont sur la face gauche $(ADHE)$. On les relie pour obtenir le segment $[MI]$.</p>" },
+                { id: 's3_step5', text: "<h4 class='font-bold text-amber-600 mb-2'>Étape 5 : Parallélisme</h4><p>La face droite $(BCGF)$ est parallèle à la face gauche $(ADHE)$. Depuis le point $J$, on trace une <strong>parallèle au segment $[MI]$</strong>. Elle coupe exactement au milieu de l'arête $[BC]$ au point $N$.</p>" },
+                { id: 's3_step6', text: "<h4 class='font-bold text-emerald-600 mb-2'>Terminé ! 🎉</h4><p>Les points $K$ et $N$ se trouvent sur la face inférieure, on les relie. La section forme un superbe <strong>Pentagone</strong>.</p>" }
+            ]
+        },
+        {
+            id: 's4',
+            title: "Cas N°4 : L'Hexagone Régulier",
+            focus: "Application multiple de la règle du parallélisme",
+            initText: `
+                <p class="font-bold text-lg mb-2 text-indigo-900">Énoncé :</p>
+                <p>Soit le cube $ABCDEFGH$. On donne 3 points <strong>placés sur les milieux des arêtes</strong> :</p>
+                <ul class="list-disc pl-5 mt-2 mb-4 space-y-1">
+                    <li>$I$ au milieu de $[AB]$</li>
+                    <li>$J$ au milieu de $[BC]$</li>
+                    <li>$K$ au milieu de $[CG]$</li>
+                </ul>
+                <p>Déterminez la section du cube par le plan $(IJK)$.</p>`,
+            steps: [
+                { id: 's4_step1', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 1 : Coplanarité (Base)</h4><p>Les points $I$ et $J$ sont sur la face inférieure $(ABCD)$. On trace $[IJ]$.</p>" },
+                { id: 's4_step2', text: "<h4 class='font-bold text-indigo-700 mb-2'>Étape 2 : Coplanarité (Droite)</h4><p>Les points $J$ et $K$ sont sur la face droite $(BCGF)$. On trace $[JK]$.</p>" },
+                { id: 's4_step3', text: "<h4 class='font-bold text-amber-600 mb-2'>Étape 3 : Parallélisme (Gauche/Droite)</h4><p>La face gauche est parallèle à la face droite. L'intersection sur la face gauche sera parallèle à $[JK]$. On trace cette parallèle passant par $I$. Elle coupe l'arête $[AE]$ en son milieu $N$.</p>" },
+                { id: 's4_step4', text: "<h4 class='font-bold text-amber-600 mb-2'>Étape 4 : Parallélisme (Arrière/Avant)</h4><p>La face arrière est parallèle à la face avant (dont l'intersection est $[IN]$). Par $K$, on trace la parallèle à $[IN]$. Elle coupe l'arête $[GH]$ en son milieu $L$.</p>" },
+                { id: 's4_step5', text: "<h4 class='font-bold text-amber-600 mb-2'>Étape 5 : Parallélisme (Haut/Bas)</h4><p>La face supérieure est parallèle à la face inférieure (intersection $[IJ]$). Par $L$, on trace la parallèle à $[IJ]$, qui coupe l'arête $[EH]$ en son milieu $M$.</p>" },
+                { id: 's4_step6', text: "<h4 class='font-bold text-emerald-600 mb-2'>Étape 6 : Fermeture 🎉</h4><p>Les points $M$ et $N$ sont sur la face gauche, on les relie. La section passe par les milieux exacts de 6 arêtes du cube : c'est un splendide <strong>Hexagone régulier</strong> !</p>" }
+            ]
+        }
+    ];
+
+    let currentScenarioIndex = 0;
+    let currentStep = 0;
+
+    // --- LOGIQUE DE L'EXERCICE ---
+    function loadScenario(index) {
+        const scenario = scenarios[index];
+        currentStep = 0;
+
+        // Mise à jour des titres
+        document.getElementById('scenario-title').innerText = scenario.title;
+        document.getElementById('scenario-focus').innerText = `Focus : ${scenario.focus}`;
+
+        // Afficher le bon SVG
+        document.querySelectorAll('.scenario-container').forEach(c => c.classList.remove('active'));
+        document.getElementById(`svg-scenario-${index + 1}`).classList.add('active');
+
+        // Réinitialiser les classes "visible" des SVG
+        document.querySelectorAll('.svg-step').forEach(step => step.classList.remove('visible'));
+
+        // Initialiser le texte explicatif
+        const descDiv = document.getElementById('ex-description');
+        descDiv.innerHTML = scenario.initText;
+        if(window.MathJax) MathJax.typesetPromise([descDiv]);
+
+        // Gérer l'affichage des boutons
+        document.getElementById('btn-next').classList.remove('hidden');
+        document.getElementById('btn-reset').classList.add('hidden');
+        updateCounter();
+    }
+
+    function toggleScenario() {
+        currentScenarioIndex = (currentScenarioIndex + 1) % scenarios.length;
+        loadScenario(currentScenarioIndex);
+    }
+
+    function nextStep() {
+        const scenario = scenarios[currentScenarioIndex];
+        
+        if (currentStep < scenario.steps.length) {
+            // Révéler l'élément SVG correspondant
+            const stepId = scenario.steps[currentStep].id;
+            document.getElementById(stepId).classList.add('visible');
+            
+            // Mettre à jour le texte
+            const descDiv = document.getElementById('ex-description');
+            descDiv.innerHTML = scenario.steps[currentStep].text;
+            if(window.MathJax) MathJax.typesetPromise([descDiv]);
+
+            currentStep++;
+            updateCounter();
+
+            // Fin de l'exercice
+            if (currentStep === scenario.steps.length) {
+                document.getElementById('btn-next').classList.add('hidden');
+                document.getElementById('btn-reset').classList.remove('hidden');
+            }
+        }
+    }
+
+    function resetExercise() {
+        loadScenario(currentScenarioIndex);
+    }
+
+    function updateCounter() {
+        const total = scenarios[currentScenarioIndex].steps.length;
+        document.getElementById('step-counter').innerText = `Étape ${currentStep} / ${total}`;
+    }
+
+    // Initialisation au chargement de la page
+    window.onload = () => {
+        loadScenario(0);
+    };
+  </script>
+</body>
+</html>
