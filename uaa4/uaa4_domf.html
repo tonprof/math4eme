@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPES de Hesbaye - UAA4: Fonctions de référence – LIBOY D.</title>
+  
+  <!-- MathJax pour l'affichage des formules mathématiques -->
+  <script>
+      window.MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']],
+              displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+      };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+:root{
+  --bg1:#0f172a; --bg2:#1d4ed8; --bg3:#7c3aed;
+  --card:#ffffffee; --text:#14213d; --muted:#475569;
+  --accent:#f97316; --accent2:#14b8a6; --ok:#16a34a; --bad:#dc2626;
+  --shadow:0 18px 40px rgba(15,23,42,.18);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  min-height:100vh;
+}
+.container{width:min(1180px,92vw); margin:0 auto; padding:26px 0 40px}
+.hero{
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.16);
+  color:white; border-radius:30px; padding:28px; box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);
+}
+.hero h1{margin:0 0 10px; font-size:clamp(1.8rem,4vw,3rem)}
+.hero p{margin:.35rem 0; line-height:1.6}
+.subtitle{opacity:.92}
+.card{
+  background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow);
+  margin-bottom: 24px;
+}
+.card h2,.card h3{margin-top:0}
+.badge{display:inline-block; padding:6px 12px; border-radius:999px; font-weight:bold; font-size:.85rem; color:white; background:linear-gradient(90deg,var(--accent),#fb7185)}
+.topbar{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:18px}
+.back-btn,.btn{
+  border:none; cursor:pointer; border-radius:999px; padding:12px 18px; font-weight:700;
+  background:linear-gradient(90deg,var(--accent),#fb7185); color:white; box-shadow:var(--shadow); text-decoration:none;
+}
+.btn.alt{background:linear-gradient(90deg,var(--accent2),#38bdf8)}
+.btn.dark{background:linear-gradient(90deg,#334155,#0f172a)}
+.btn.ghost{background:#eef2ff; color:#1e293b; box-shadow:none; border:1px solid #cbd5e1; transition: all 0.2s;}
+.btn.ghost:hover{background:#e0e7ff;}
+.btn.solution{background:linear-gradient(90deg, #8b5cf6, #d946ef);}
+.actions{display:flex; flex-wrap:wrap; gap:10px; margin-top: 20px; justify-content: center;}
+
+label{font-weight:700; margin:.3rem 0; color:#1e293b; display:block; text-align:center;}
+small,.muted{color:var(--muted)}
+
+.result{padding:16px; border-radius:14px; margin-top:20px; font-weight:normal; display:none;}
+.result h3 { margin-top: 0; color: #1e293b; margin-bottom: 8px;}
+.ok{background:#dcfce7; color:#166534; border: 1px solid #bbf7d0;}
+.bad{background:#fee2e2; color:#991b1b; border: 1px solid #fecaca;}
+.info{background:#fffbeb; color:#92400e; border: 1px solid #fde68a;}
+.warning{background:#fef3c7; color:#92400e; border: 1px solid #fde68a;}
+
+details{background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:12px 14px; margin-bottom: 12px;}
+details summary{cursor:pointer; font-weight:700}
+
+/* Tables génériques */
+table{width:100%; border-collapse:collapse; background:white; border-radius:18px; overflow:hidden; margin-top: 15px;}
+th,td{padding:12px 16px; border-bottom:1px solid #e2e8f0; text-align:left; vertical-align:top}
+th{background:#fffbeb; color:#b45309;}
+td.math-cell { font-size: 1.15rem; }
+
+.exercise-block{border:1px solid #e2e8f0; border-radius:18px; padding:20px; background:#fff; margin-top: 18px;}
+.dataset-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #b45309;
+    background: #fffbeb;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px dashed #fcd34d;
+    line-height: 1.6;
+}
+
+/* Grille QCM */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+.option-btn {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    color: #334155;
+    pointer-events: auto;
+}
+.option-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+.option-btn.selected {
+    background: #fff7ed;
+    border-color: #f59e0b;
+    color: #b45309;
+    box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2);
+}
+.option-btn * { pointer-events: none; } /* Empêche MathJax d'intercepter le clic */
+
+.footer-note{color:white; opacity:.9; text-align:center; padding:10px}
+ul.tight li{margin:.45rem 0}
+
+.tabs { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 6px; }
+.tab { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: bold; white-space: nowrap; transition: all 0.2s; backdrop-filter: blur(10px); }
+.tab:hover { background: rgba(255, 255, 255, 0.25); }
+.tab.active { background: white; color: var(--text); box-shadow: var(--shadow); }
+
+@media print{
+  body{background:white}
+  .hero{color:#111; background:#fff; border:1px solid #ddd; box-shadow:none}
+  .back-btn,.actions,.footer-note,.tabs{display:none!important}
+  .card{box-shadow:none; border:1px solid #ddd}
+  .container{width:100%; padding:0}
+  table { border: 1px solid #cbd5e1; }
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <a class="back-btn" href="../index.html">⟵ Retour à l'accueil</a>
+      <span class="badge" style="background: linear-gradient(90deg, #f59e0b, #d97706)">UAA4</span>
+    </div>
+
+    <section class="hero">
+      <h2>IPES DE HESBAYE - MATHEMATIQUES (5H) - 4TT</h2>
+      <h2>CHAPITRE 4: Fonctions de référence</h2>
+      <p>LIBOY D.</p>
+    </section>
+    
+    <br>
+    <nav class="tabs">
+      <a href="uaa4.html" class="tab">Explorateur de graphes</a>
+      <a href="uaa4_domf.html" class="tab active">Exercices domf</a>
+    </nav>
+
+    <section class="card">
+      <h2>Recherche du domaine de définition ($dom f$)</h2>
+      <p>Observez la fonction générée et déterminez son domaine d'existence en appliquant les règles vues en classe. <strong>Sélectionnez ensuite la bonne réponse parmi les 4 propositions.</strong></p>
+      
+      <div class="exercise-block">
+        <div class="dataset-display" id="domfStatement">
+            <!-- La fonction apparaitra ici -->
+        </div>
+
+        <label>Quel est le domaine de cette fonction ?</label>
+        <div class="options-grid" id="domfOptions">
+            <!-- Les options de réponse apparaitront ici -->
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn ghost" onclick="generateDomf()">Nouvelle fonction</button>
+        <button class="btn solution" onclick="checkDomf()">Vérifier ma réponse</button>
+        <button class="btn alt" onclick="showDomfHint()">Un indice ?</button>
+        <button class="btn dark" onclick="revealDomf()">Voir la solution détaillée</button>
+      </div>
+      
+      <div id="domfFeedback" class="result"></div>
+      <div id="domfHint" class="result info" style="margin-top: 10px;"></div>
+      <div id="domfReveal" class="result warning" style="margin-top: 10px;"></div>
+    </section>
+
+    <section class="card">
+      <h2>Mémento : Rappel des conditions d'existence (C.E.)</h2>
+      <p>Pour trouver le domaine de définition d'une fonction, on part du principe que $x \in \mathbb{R}$, mais on doit <strong>exclure ou limiter</strong> certaines valeurs selon ces 4 règles principales :</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Règle</th>
+            <th>Condition d'Existence (C.E.)</th>
+            <th>Exemple type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1) Fraction</strong><br><small>On ne peut pas diviser par zéro.</small></td>
+            <td>Dénominateur $\neq 0$</td>
+            <td>
+              $f(x) = \frac{3x+2}{2x-8}$ <br>
+              C.E. : $2x - 8 \neq 0 \iff x \neq 4$<br>
+              $\Rightarrow \mathbf{dom f = ]-\infty ; 4[ \cup ]4 ; +\infty[}$
+            </td>
+          </tr>
+          <tr>
+            <td><strong>2) Racine d'indice pair</strong><br><small>Une racine d'un négatif n'existe pas dans $\mathbb{R}$.</small></td>
+            <td>Radicand $\geq 0$</td>
+            <td>
+              $f(x) = \sqrt{2x+6}$ <br>
+              C.E. : $2x + 6 \geq 0 \iff x \geq -3$<br>
+              $\Rightarrow \mathbf{dom f = [-3 ; +\infty[}$
+            </td>
+          </tr>
+          <tr>
+            <td><strong>3) Racine paire au dénominateur</strong><br><small>Combinaison directe : ni négatif, ni nul.</small></td>
+            <td>Radicand $> 0$</td>
+            <td>
+              $f(x) = \frac{5}{\sqrt{x-1}}$ <br>
+              C.E. : $x - 1 > 0 \iff x > 1$<br>
+              $\Rightarrow \mathbf{dom f = ]1 ; +\infty[}$
+            </td>
+          </tr>
+          <tr>
+            <td><strong>4) Cas mixte</strong><br><small>Présence de plusieurs fractions et/ou racines.</small></td>
+            <td>On <strong>combine</strong> (intersection) toutes les C.E.</td>
+            <td>
+              $f(x) = \frac{\sqrt{3-x}}{x-1}$ <br>
+              C.E. : $3-x \geq 0 \text{ ET } x-1 \neq 0$<br>
+              $\iff x \leq 3 \text{ ET } x \neq 1$<br>
+              $\Rightarrow \mathbf{dom f = ]-\infty ; 1[ \cup ]1 ; 3]}$
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="actions" style="margin-top:16px; justify-content: flex-end;">
+        <button class="btn ghost" onclick="window.print()">🖨️ Imprimer la fiche / PDF</button>
+      </div>
+    </section>
+
+    <p class="footer-note">&copy; 2026 LIBOY D. / IPES de Hesbaye / Plateforme éducative interactive</p>
+  </div>
+
+  <script>
+    let currentDomfEx = null;
+    let selectedOptionIndex = null;
+    let hintLevel = 0;
+
+    // Utilitaire pour générer un entier aléatoire
+    function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Gestion du clic sur une option du QCM
+    function selectOption(index) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        buttons[index].classList.add('selected');
+        selectedOptionIndex = index;
+    }
+
+    function generateDomf() {
+        const type = rand(1, 3); // 1: Fraction, 2: Racine, 3: Mixte
+        let statement = "";
+        let correctMath = "";
+        let distractors = [];
+        let details = "";
+        let hints = [];
+
+        if (type === 1) { 
+            // Type 1 : Fraction  f(x) = (ax+b) / (x - root)
+            let a = rand(1, 5);
+            let b = rand(-5, 5);
+            let root = rand(-5, 5);
+            
+            let denom = root > 0 ? `x - ${root}` : (root < 0 ? `x + ${-root}` : `x`);
+            let num = b === 0 ? `${a}x` : `${a}x ${b > 0 ? '+' : ''} ${Math.abs(b)}`;
+            
+            statement = `$$f(x) = \\frac{${num}}{${denom}}$$`;
+            correctMath = `]-\\infty ; ${root}[ \\cup ]${root} ; +\\infty[`;
+            distractors = [
+                `]-\\infty ; ${-root}[ \\cup ]${-root} ; +\\infty[`,
+                `[${root} ; +\\infty[`,
+                `\\mathbb{R}`
+            ];
+            hints = [
+                "Observez la fonction : Il s'agit d'une fraction. Quelle règle s'applique ?",
+                "La règle est : le dénominateur doit être différent de zéro ($D(x) \\neq 0$).",
+                `Résolvez l'inéquation : $${denom} \\neq 0$.`
+            ];
+            details = `<strong>Condition d'existence (C.E.) :</strong> Le dénominateur ne peut pas être nul.<br><br>
+                       $${denom} \\neq 0 \\iff x \\neq ${root}$.<br><br>
+                       Le domaine contient donc tous les réels sauf la valeur interdite ${root}.<br>
+                       <strong>Solution : $dom f = ]-\\infty ; ${root}[ \\cup ]${root} ; +\\infty[$</strong>`;
+
+        } else if (type === 2) { 
+            // Type 2 : Racine carrée  f(x) = sqrt(x - root) ou sqrt(root - x)
+            let dir = rand(0, 1); 
+            let root = rand(-5, 5);
+            
+            if (dir === 0) {
+                let expr = root > 0 ? `x - ${root}` : (root < 0 ? `x + ${-root}` : `x`);
+                statement = `$$f(x) = \\sqrt{${expr}}$$`;
+                correctMath = `[${root} ; +\\infty[`;
+                distractors = [
+                    `]${root} ; +\\infty[`,
+                    `]-\\infty ; ${root}]`,
+                    `]-\\infty ; ${root}[ \\cup ]${root} ; +\\infty[`
+                ];
+                details = `<strong>Condition d'existence (C.E.) :</strong> L'expression sous la racine doit être positive ou nulle.<br><br>
+                           $${expr} \\geq 0 \\iff x \\geq ${root}$.<br><br>
+                           Le domaine va de ${root} (inclus) jusqu'à l'infini.<br>
+                           <strong>Solution : $dom f = [${root} ; +\\infty[$</strong>`;
+            } else {
+                let expr = root > 0 ? `${root} - x` : (root === 0 ? `-x` : `${-root} - x`);
+                statement = `$$f(x) = \\sqrt{${expr}}$$`;
+                correctMath = `]-\\infty ; ${root}]`;
+                distractors = [
+                    `]-\\infty ; ${root}[`,
+                    `[${root} ; +\\infty[`,
+                    `]-\\infty ; ${root}[ \\cup ]${root} ; +\\infty[`
+                ];
+                details = `<strong>Condition d'existence (C.E.) :</strong> L'expression sous la racine doit être positive ou nulle.<br><br>
+                           $${expr} \\geq 0 \\iff -x \\geq -${root} \\iff x \\leq ${root}$.<br>
+                           <em>(Attention au changement de signe de l'inégalité !)</em><br><br>
+                           Le domaine va de moins l'infini jusqu'à ${root} (inclus).<br>
+                           <strong>Solution : $dom f = ]-\\infty ; ${root}]$</strong>`;
+            }
+            hints = [
+                "Observez la fonction : Il s'agit d'une racine carrée. Quelle règle s'applique ?",
+                "La règle est : le radicand (ce qui est sous la racine) doit être supérieur ou égal à zéro.",
+                "Attention au sens de l'inégalité si vous devez diviser ou multiplier par un nombre négatif lors de la résolution."
+            ];
+
+        } else { 
+            // Type 3 : Mixte (Fraction + Racine au numérateur)
+            let rootRad = rand(-5, 5);
+            let rootDenom = rand(-5, 5);
+            while(rootDenom === rootRad) { rootDenom = rand(-5, 5); } // Pour éviter que la valeur soit la même
+            
+            let dir = rand(0, 1);
+
+            if (dir === 0) { 
+                // sqrt(x - rootRad) / (x - rootDenom)  where rootDenom > rootRad
+                if(rootDenom < rootRad) {
+                    let temp = rootDenom;
+                    rootDenom = rootRad;
+                    rootRad = temp;
+                }
+
+                let numExpr = rootRad > 0 ? `x - ${rootRad}` : (rootRad < 0 ? `x + ${-rootRad}` : `x`);
+                let denExpr = rootDenom > 0 ? `x - ${rootDenom}` : (rootDenom < 0 ? `x + ${-rootDenom}` : `x`);
+                
+                statement = `$$f(x) = \\frac{\\sqrt{${numExpr}}}{${denExpr}}$$`;
+                correctMath = `[${rootRad} ; ${rootDenom}[ \\cup ]${rootDenom} ; +\\infty[`;
+                distractors = [
+                    `[${rootRad} ; +\\infty[`,
+                    `]${rootRad} ; ${rootDenom}[ \\cup ]${rootDenom} ; +\\infty[`,
+                    `]-\\infty ; ${rootDenom}[ \\cup ]${rootDenom} ; +\\infty[`
+                ];
+                details = `<strong>Conditions d'existence (C.E.) :</strong> Il y a deux règles à combiner (intersection).<br>
+                           <ol>
+                             <li>Racine au numérateur : $${numExpr} \\geq 0 \\iff x \\geq ${rootRad}$</li>
+                             <li>Dénominateur : $${denExpr} \\neq 0 \\iff x \\neq ${rootDenom}$</li>
+                           </ol>
+                           Le domaine contient les nombres plus grands ou égaux à ${rootRad}, desquels il faut exclure la valeur interdite ${rootDenom}.<br><br>
+                           <strong>Solution : $dom f = [${rootRad} ; ${rootDenom}[ \\cup ]${rootDenom} ; +\\infty[$</strong>`;
+            } else { 
+                // sqrt(rootRad - x) / (x - rootDenom) where rootDenom < rootRad
+                if(rootDenom > rootRad) {
+                    let temp = rootDenom;
+                    rootDenom = rootRad;
+                    rootRad = temp;
+                }
+
+                 let numExpr = rootRad > 0 ? `${rootRad} - x` : (rootRad === 0 ? `-x` : `${rootRad} - x`);
+                 let denExpr = rootDenom > 0 ? `x - ${rootDenom}` : (rootDenom < 0 ? `x + ${-rootDenom}` : `x`);
+                 
+                 statement = `$$f(x) = \\frac{\\sqrt{${numExpr}}}{${denExpr}}$$`;
+                 correctMath = `]-\\infty ; ${rootDenom}[ \\cup ]${rootDenom} ; ${rootRad}]`;
+                 distractors = [
+                    `]-\\infty ; ${rootRad}]`,
+                    `]-\\infty ; ${rootDenom}[ \\cup ]${rootDenom} ; ${rootRad}[`,
+                    `]-\\infty ; ${rootDenom}[ \\cup ]${rootDenom} ; +\\infty[`
+                 ];
+                 details = `<strong>Conditions d'existence (C.E.) :</strong> Il y a deux règles à combiner (intersection).<br>
+                           <ol>
+                             <li>Racine au numérateur : $${numExpr} \\geq 0 \\iff -x \\geq -${rootRad} \\iff x \\leq ${rootRad}$</li>
+                             <li>Dénominateur : $${denExpr} \\neq 0 \\iff x \\neq ${rootDenom}$</li>
+                           </ol>
+                           Le domaine contient les nombres plus petits ou égaux à ${rootRad}, desquels il faut exclure la valeur interdite ${rootDenom}.<br><br>
+                           <strong>Solution : $dom f = ]-\\infty ; ${rootDenom}[ \\cup ]${rootDenom} ; ${rootRad}]$</strong>`;
+            }
+            hints = [
+                "Cette fonction combine deux problèmes : une fraction ET une racine carrée.",
+                "Écrivez les deux C.E. : 1) Dénominateur $\\neq 0$ et 2) Sous la racine $\\geq 0$.",
+                "Faites l'intersection des deux conditions : trouvez l'intervalle donné par la racine, puis retirez-y la valeur interdite trouvée au dénominateur."
+            ];
+        }
+
+        // Mélange des options
+        let optionsArray = [{ text: correctMath, isCorrect: true }];
+        distractors.forEach(dist => {
+            optionsArray.push({ text: dist, isCorrect: false });
+        });
+        
+        // Algorithme de mélange simple (Fisher-Yates)
+        for (let i = optionsArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [optionsArray[i], optionsArray[j]] = [optionsArray[j], optionsArray[i]];
+        }
+
+        // Sauvegarde de l'exercice actuel
+        currentDomfEx = {
+            statement: statement,
+            options: optionsArray,
+            details: details,
+            hints: hints
+        };
+
+        // Mise à jour UI
+        selectedOptionIndex = null;
+        hintLevel = 0;
+        
+        document.getElementById('domfStatement').innerHTML = currentDomfEx.statement;
+        
+        const optionsGrid = document.getElementById('domfOptions');
+        optionsGrid.innerHTML = '';
+        currentDomfEx.options.forEach((opt, index) => {
+            optionsGrid.innerHTML += `<div class="option-btn" onclick="selectOption(${index})">$${opt.text}$</div>`;
+        });
+        
+        document.getElementById('domfFeedback').style.display = 'none';
+        document.getElementById('domfHint').style.display = 'none';
+        document.getElementById('domfReveal').style.display = 'none';
+
+        // Indiquer à MathJax de reformater les nouvelles équations
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    }
+
+    function checkDomf() {
+        const fb = document.getElementById('domfFeedback');
+        
+        if (selectedOptionIndex === null) {
+            fb.className = 'result bad';
+            fb.innerHTML = '⚠️ Veuillez sélectionner une option avant de vérifier.';
+            fb.style.display = 'block';
+            return;
+        }
+
+        const isCorrect = currentDomfEx.options[selectedOptionIndex].isCorrect;
+        fb.style.display = 'block';
+        
+        if (isCorrect) {
+            fb.className = 'result ok';
+            fb.innerHTML = `<h3>✅ Excellente analyse !</h3><p>C'est bien le bon domaine de définition.</p>`;
+        } else {
+            fb.className = 'result bad';
+            fb.innerHTML = `<h3>❌ Ce n'est pas le bon domaine.</h3><p>Prenez un brouillon, écrivez la ou les Conditions d'Existence (C.E.) et résolvez pas-à-pas.</p>`;
+        }
+    }
+
+    function showDomfHint() {
+        if (!currentDomfEx) return;
+        hintLevel++;
+        const box = document.getElementById('domfHint');
+        box.style.display = 'block';
+        box.innerHTML = `💡 <strong>Indice ${hintLevel} :</strong> ` + currentDomfEx.hints[Math.min(hintLevel - 1, currentDomfEx.hints.length - 1)];
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    function revealDomf() {
+        if (!currentDomfEx) return;
+        const box = document.getElementById('domfReveal');
+        box.style.display = 'block';
+        box.innerHTML = `<h3>Résolution détaillée :</h3><p>${currentDomfEx.details}</p>`;
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    // Lancer la génération au chargement
+    window.onload = generateDomf;
+
+  </script>
+</body>
+</html>
