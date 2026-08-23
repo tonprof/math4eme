@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 0 : Les Essentiels - Mathématiques Interactives</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX for Math Formatting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        },
+                        warmbg: '#faf9f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+        canvas.interactive-canvas {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-[#faf9f6] text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-900">
+
+    <!-- Chosen Palette: Warm Sand & Slate Harmony (slate-800 text, warmbg #faf9f6 background, indigo/blue primary accents, emerald success indicators, amber highlights) -->
+    
+    <!-- Application Structure Plan:
+         1. Header & Navigation: Persistent top navigation with progress tracker, section jump links, search/filter input, and overall completion score.
+         2. Hero Overview & Interactive Dashboard: Introduction to "Chapitre 0: Les essentiels", quick stats, global progress bar, and chapter selection shortcuts.
+         3. Section 1 - Équations du 1er degré:
+            - Introductory paragraph detailing goals and cognitive focus.
+            - Interactive Theory & Solved Examples Accordion (10 detailed solved problems).
+            - Visual Interactive Tool: Step-by-Step Balance & Equation Solver Simulator ($ax+b = cx+d$).
+            - Interactive Practice Module: Exercises 1 to 5 (50 problems total) with real-time answer checking, instant feedback, hints, and step-by-step solution reveals.
+         4. Section 2 - Produits Remarquables:
+            - Introductory paragraph explaining algebraic formulas and expansions.
+            - Theory & Formulas Cheat Sheet Cards.
+            - Visual Interactive Tool: Geometric Area Proof Simulator ($(a+b)^2 = a^2+2ab+b^2$) with dynamic sliders.
+            - Solved Examples (10 items).
+            - Interactive Practice Module: Exercises 6 to 10 (50 problems total) covering expansion and factorization with real-time feedback.
+         5. Section 3 - L'Équation d'une Droite:
+            - Introductory paragraph explaining cartesian coordinates, slope $m$, intercept $p$.
+            - Theory & 10 Solved Examples.
+            - Visual Interactive Tool: Live Dynamic Coordinate Canvas Plotter ($y = mx+p$ slider mode and 2-Point Mode $A,B$).
+            - Interactive Practice Module: Exercises 11 to 15 (50 problems total) with automated coordinate & formula verification.
+         6. Section 4 - Mode Révision & Quiz: Dynamic generator drawing random problems from all 15 exercise series, scorecard, and downloadable summary.
+         
+         RATIONALE: The report is a foundational high-school math module. Structuring it into 3 clear thematic zones combined with interactive visual solvers transforms passive text reading into active learning. Self-learners can immediately test their knowledge, visualize abstract concepts (geometry of identities, line slope, balance method), and receive instant validation.
+    -->
+
+    <!-- Visualization & Content Choices:
+         - Text & Theory -> Formatted LaTeX with KaTeX rendering for optimal math readability.
+         - Equation Step Solver -> Pure HTML/CSS animated balance scale & step breakdown -> Allows dynamic parameter input to see reduction steps.
+         - Geometric Area Proof -> HTML5 Canvas dynamic visualization -> Demonstrates $(a+b)^2$ as four geometric sub-rectangles with dynamic real-time area calculation.
+         - Cartesian Line Plotter -> HTML5 Canvas grid graph -> Visualizes slope $m$ (triangle $\Delta y / \Delta x$) and $y$-intercept $p$ dynamically.
+         - Interactive Exercises -> JS string normalizer + state tracker -> Provides real-time verification and solution reveals for 150 unique math problems from Exercises 1 through 15 without page reloads.
+         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo / Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+                        &Sigma;
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-900 leading-tight">Chapitre 0 : Les Essentiels</h1>
+                        <p class="text-xs text-slate-500 hidden sm:block">Mathématiques Interactives &bull; Théorie, Outils &amp; Exercices</p>
+                    </div>
+                </div>
+
+                <!-- Nav Links -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2 text-sm font-medium">
+                    <button onclick="switchTab('tab-overview')" id="nav-tab-overview" class="px-3 py-2 rounded-lg text-brand-600 bg-brand-50 font-semibold transition-colors">
+                        &Icirc;lot Central
+                    </button>
+                    <button onclick="switchTab('tab-equations')" id="nav-tab-equations" class="px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors">
+                        1. Équations
+                    </button>
+                    <button onclick="switchTab('tab-produits')" id="nav-tab-produits" class="px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors">
+                        2. Produits Remarquables
+                    </button>
+                    <button onclick="switchTab('tab-droite')" id="nav-tab-droite" class="px-3 py-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors">
+                        3. Équation de Droite
+                    </button>
+                    <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="px-3 py-2 rounded-lg text-amber-700 hover:bg-amber-50 transition-colors">
+                        &starf; Mode Test
+                    </button>
+                </nav>
+
+                <!-- Global Score Indicator -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs text-slate-500 font-medium">Progression</div>
+                        <div class="text-sm font-bold text-brand-700" id="global-progress-text">0 / 150 résolus</div>
+                    </div>
+                    <div class="w-20 bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                        <div id="global-progress-bar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Bar -->
+        <div class="md:hidden flex border-t border-slate-100 bg-slate-50 overflow-x-auto px-2 py-1.5 space-x-2 text-xs font-medium">
+            <button onclick="switchTab('tab-overview')" class="px-2.5 py-1.5 rounded-md whitespace-nowrap bg-white shadow-sm text-slate-800">Accueil</button>
+            <button onclick="switchTab('tab-equations')" class="px-2.5 py-1.5 rounded-md whitespace-nowrap bg-white shadow-sm text-slate-800">1. Équations</button>
+            <button onclick="switchTab('tab-produits')" class="px-2.5 py-1.5 rounded-md whitespace-nowrap bg-white shadow-sm text-slate-800">2. Produits Rem.</button>
+            <button onclick="switchTab('tab-droite')" class="px-2.5 py-1.5 rounded-md whitespace-nowrap bg-white shadow-sm text-slate-800">3. Droites</button>
+            <button onclick="switchTab('tab-quiz')" class="px-2.5 py-1.5 rounded-md whitespace-nowrap bg-amber-100 text-amber-900 font-bold">&starf; Test</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+        <!-- ========================================== -->
+        <!-- TAB 0: OVERVIEW / DASHBOARD               -->
+        <!-- ========================================== -->
+        <section id="tab-overview" class="space-y-8">
+            <!-- Intro Paragraph Required -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 relative overflow-hidden">
+                <div class="max-w-3xl space-y-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-brand-100 text-brand-800">
+                        Module de Remise à Niveau &bull; Mathématiques
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                        Bienvenue dans votre espace d'apprentissage des fondamentaux
+                    </h2>
+                    <p class="text-slate-600 text-base leading-relaxed">
+                        Cette application interactive réunit l'intégralité du <strong>Chapitre 0 : Les essentiels</strong>. Elle a été conçue pour structurer et dynamiser votre apprentissage des trois piliers fondamentaux des mathématiques secondaires : le maniement des <em>équations du premier degré</em>, la maîtrise des <em>produits remarquables</em> (développement et factorisation), et la géométrie analytique de l'<em>équation d'une droite</em>. Explorez la théorie enrichie, manipulez nos calculateurs visuels et entraînez-vous sur les 15 séries d'exercices autocorrectifs (150 problèmes au total) accompagnés de leurs solutions détaillées.
+                    </p>
+                    
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <button onclick="switchTab('tab-equations')" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition-colors flex items-center space-x-2">
+                            <span>Commencer par les Équations</span>
+                            <span>&rarr;</span>
+                        </button>
+                        <button onclick="switchTab('tab-quiz')" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors">
+                            Lancer un Quiz Aléatoire
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats & Quick Access Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Section 1 Card -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">1</span>
+                            <span class="text-xs font-semibold text-slate-400">50 Exercices</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">Équations du 1er Degré</h3>
+                        <p class="text-xs text-slate-500 mt-1">Forme $ax+b=0$, isolement de l'inconnue $x$, parenthèses, fractions et cas particuliers.</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 space-y-2">
+                        <div class="flex justify-between text-xs text-slate-600 font-medium">
+                            <span>Exercices résolus</span>
+                            <span id="prog-sec-1">0 / 50</span>
+                        </div>
+                        <button onclick="switchTab('tab-equations')" class="w-full py-2 bg-slate-50 hover:bg-brand-50 text-brand-600 text-xs font-bold rounded-lg transition-colors text-center">
+                            Accéder au module &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section 2 Card -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">2</span>
+                            <span class="text-xs font-semibold text-slate-400">50 Exercices</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">Produits Remarquables</h3>
+                        <p class="text-xs text-slate-500 mt-1">Carré d'une somme, carré d'une différence, binômes conjugués et factorisation $a^2-b^2$.</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 space-y-2">
+                        <div class="flex justify-between text-xs text-slate-600 font-medium">
+                            <span>Exercices résolus</span>
+                            <span id="prog-sec-2">0 / 50</span>
+                        </div>
+                        <button onclick="switchTab('tab-produits')" class="w-full py-2 bg-slate-50 hover:bg-brand-50 text-brand-600 text-xs font-bold rounded-lg transition-colors text-center">
+                            Accéder au module &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section 3 Card -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">3</span>
+                            <span class="text-xs font-semibold text-slate-400">50 Exercices</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">L'Équation d'une Droite</h3>
+                        <p class="text-xs text-slate-500 mt-1">Forme réduite $y=mx+p$, calcul du coefficient angulaire $m$, ordonnée à l'origine $p$, parallélisme.</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 space-y-2">
+                        <div class="flex justify-between text-xs text-slate-600 font-medium">
+                            <span>Exercices résolus</span>
+                            <span id="prog-sec-3">0 / 50</span>
+                        </div>
+                        <button onclick="switchTab('tab-droite')" class="w-full py-2 bg-slate-50 hover:bg-brand-50 text-brand-600 text-xs font-bold rounded-lg transition-colors text-center">
+                            Accéder au module &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Search & Exercise Quick Jumper -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Recherche Rapide &amp; Filtre d'Exercices</h3>
+                        <p class="text-xs text-slate-500">Recherchez un terme spécifique (ex: "pente", "fraction", "factoriser", "parallèle") ou sautez vers un exercice (Ex. 1 à 15).</p>
+                    </div>
+                    <div class="relative w-full sm:w-72">
+                        <input type="text" id="global-search-input" onkeyup="filterExercisesGlobal()" placeholder="Ex: Exercice 11, fraction, pente..." class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
+                    </div>
+                </div>
+                <div id="search-results-box" class="hidden pt-4 border-t border-slate-100 space-y-2 max-h-60 overflow-y-auto">
+                    <!-- Dynamic search results populates here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: EQUATIONS DU PREMIER DEGRÉ          -->
+        <!-- ========================================== -->
+        <section id="tab-equations" class="hidden space-y-8">
+            <!-- Required Introductory Paragraph -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">Chapitre 0.1</span>
+                <h2 class="text-2xl font-bold text-slate-900">1. Les Équations du Premier Degré</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Cette section traite de la résolution des équations algébriques linéaires de la forme généralisée $ax + b = 0$ (avec $a \neq 0$). L'objectif fondamental est d'isoler la variable inconnue $x$ à l'aide des opérations élémentaires équivalentes (addition, soustraction, multiplication, division). Vous trouverez ci-dessous les rappels théoriques, 10 exemples résolus pas à pas, notre <strong>Simulateur Visuel d'Équation</strong> interactive, ainsi que 5 séries complètes d'exercices autocorrectifs (Exercices 1 à 5).
+                </p>
+            </div>
+
+            <!-- Theory Card -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                    <span class="text-blue-600">&bull;</span>
+                    <span>Théorie et Règles d'Équivalence</span>
+                </h3>
+                <p class="text-sm text-slate-600">
+                    Une équation du premier degré à une inconnue $x$ peut toujours se ramener à la forme $ax + b = 0$, où $a$ et $b$ sont des nombres réels avec $a \neq 0$. Pour isoler $x$, deux règles fondamentales s'appliquent :
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <strong class="text-slate-800 block mb-1">Règle 1 : Addition / Soustraction</strong>
+                        <p class="text-slate-600 text-xs">On peut ajouter ou soustraire un même nombre aux deux membres d'une équation sans en modifier la solution.</p>
+                        <p class="text-xs text-blue-700 font-mono mt-2">$a + c = b + c \iff a = b$</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <strong class="text-slate-800 block mb-1">Règle 2 : Multiplication / Division</strong>
+                        <p class="text-slate-600 text-xs">On peut multiplier ou diviser les deux membres par un même nombre non nul sans en modifier la solution.</p>
+                        <p class="text-xs text-blue-700 font-mono mt-2 font-semibold">Si $k \neq 0$, $k \cdot a = k \cdot b \iff a = b$</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Interactive Tool: Step Demonstrator -->
+            <div class="bg-slate-900 text-white rounded-2xl p-6 space-y-6 shadow-lg">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                        <span class="text-xs font-semibold text-blue-400 uppercase tracking-widest">Outil Interactif</span>
+                        <h3 class="text-xl font-bold text-white">Simulateur d'Équation pas à pas ($ax + b = cx + d$)</h3>
+                    </div>
+                    <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full">Résolution guidée</span>
+                </div>
+                <p class="text-xs text-slate-300">Saisissez les coefficients réels pour observer la réduction méthodique étape par étape.</p>
+
+                <!-- Input Row -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-slate-900 text-sm font-semibold">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">a ($x$ à gauche)</label>
+                        <input type="number" id="eq-a" value="5" class="w-full px-3 py-1.5 rounded bg-slate-800 text-white border border-slate-700 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">b (constante gauche)</label>
+                        <input type="number" id="eq-b" value="-4" class="w-full px-3 py-1.5 rounded bg-slate-800 text-white border border-slate-700 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">c ($x$ à droite)</label>
+                        <input type="number" id="eq-c" value="3" class="w-full px-3 py-1.5 rounded bg-slate-800 text-white border border-slate-700 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">d (constante droite)</label>
+                        <input type="number" id="eq-d" value="10" class="w-full px-3 py-1.5 rounded bg-slate-800 text-white border border-slate-700 focus:border-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="solveInteractiveEquation()" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors">
+                        Calculer la résolution étape par étape
+                    </button>
+                </div>
+
+                <!-- Resolution Steps Display -->
+                <div id="eq-steps-container" class="bg-slate-800 p-4 rounded-xl space-y-3 font-mono text-sm border border-slate-700 text-blue-200">
+                    <!-- Step result generated via JS -->
+                </div>
+            </div>
+
+            <!-- Solved Examples Accordion -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-900">1.1 Exemples Résolus du Cours (10 Problèmes)</h3>
+                    <button onclick="toggleAllSolved('solved-eq')" class="text-xs text-brand-600 font-semibold hover:underline">
+                        Tout afficher / masquer
+                    </button>
+                </div>
+                <div id="solved-eq-list" class="space-y-3">
+                    <!-- Solved Examples list populated by JS -->
+                </div>
+            </div>
+
+            <!-- Exercises 1 to 5 Module -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold text-slate-900">1.2 Séquence d'Exercices de la Section 1 (Exercices 1 à 5)</h3>
+                
+                <!-- Exercise Selector Buttons -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="showExerciseGroup('ex-1')" id="btn-ex-1" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-brand-600 bg-brand-600 text-white">Exercice 1 (Inconnue basique)</button>
+                    <button onclick="showExerciseGroup('ex-2')" id="btn-ex-2" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 2 (Inconnue des 2 côtés)</button>
+                    <button onclick="showExerciseGroup('ex-3')" id="btn-ex-3" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 3 (Parenthèses)</button>
+                    <button onclick="showExerciseGroup('ex-4')" id="btn-ex-4" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 4 (Fractions)</button>
+                    <button onclick="showExerciseGroup('ex-5')" id="btn-ex-5" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 5 (Décimaux &amp; Radicaux)</button>
+                </div>
+
+                <!-- Dynamic Exercise Container -->
+                <div id="exercise-display-container" class="bg-white rounded-xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                    <!-- Exercices populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: PRODUITS REMARQUABLES               -->
+        <!-- ========================================== -->
+        <section id="tab-produits" class="hidden space-y-8">
+            <!-- Required Introductory Paragraph -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md">Chapitre 0.2</span>
+                <h2 class="text-2xl font-bold text-slate-900">2. Les Produits Remarquables</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Cette section s'intéresse aux identités remarquables du second degré, indispensables pour développer instantanément un produit de polynômes ou factoriser une somme algébrique. Vous y découvrirez les trois formules cardinales, une <strong>démonstration géométrique visuelle</strong> interactive basée sur l'aire d'un carré, 10 exemples résolus pas à pas, ainsi que les séries autocorrectives (Exercices 6 à 10).
+                </p>
+            </div>
+
+            <!-- Theory Cheat Sheet Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2 shadow-sm">
+                    <span class="text-xs font-bold text-emerald-600 uppercase">Formule 1</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Carré d'une somme</h4>
+                    <p class="text-base font-serif text-emerald-800 bg-emerald-50 p-2 rounded text-center font-semibold">$(a + b)^2 = a^2 + 2ab + b^2$</p>
+                    <p class="text-xs text-slate-500">Ex: $(x + 3)^2 = x^2 + 6x + 9$</p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2 shadow-sm">
+                    <span class="text-xs font-bold text-emerald-600 uppercase">Formule 2</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Carré d'une différence</h4>
+                    <p class="text-base font-serif text-emerald-800 bg-emerald-50 p-2 rounded text-center font-semibold">$(a - b)^2 = a^2 - 2ab + b^2$</p>
+                    <p class="text-xs text-slate-500">Ex: $(x - 4)^2 = x^2 - 8x + 16$</p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2 shadow-sm">
+                    <span class="text-xs font-bold text-emerald-600 uppercase">Formule 3</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Binômes conjugués</h4>
+                    <p class="text-base font-serif text-emerald-800 bg-emerald-50 p-2 rounded text-center font-semibold">$(a + b)(a - b) = a^2 - b^2$</p>
+                    <p class="text-xs text-slate-500">Ex: $(x + 7)(x - 7) = x^2 - 49$</p>
+                </div>
+            </div>
+
+            <!-- Geometric Visualizer Tool -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                <div>
+                    <span class="text-xs font-semibold text-emerald-600 uppercase tracking-widest">Démonstration Visuelle</span>
+                    <h3 class="text-xl font-bold text-slate-900">Interprétation Géométrique de Aire = $(a+b)^2$</h3>
+                    <p class="text-xs text-slate-500 mt-1">Ajustez les curseurs $a$ et $b$ pour observer comment le grand carré est découpé en 4 zones : $a^2$, deux rectangles $ab$, et $b^2$.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Controls -->
+                    <div class="lg:col-span-5 space-y-5 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Longueur $a$</span>
+                                <span id="val-geom-a" class="text-emerald-700">4 units</span>
+                            </div>
+                            <input type="range" id="slider-geom-a" min="1" max="8" value="4" step="0.5" oninput="drawGeometricProof()" class="w-full accent-emerald-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span>Longueur $b$</span>
+                                <span id="val-geom-b" class="text-emerald-700">2 units</span>
+                            </div>
+                            <input type="range" id="slider-geom-b" min="1" max="6" value="2" step="0.5" oninput="drawGeometricProof()" class="w-full accent-emerald-600">
+                        </div>
+
+                        <!-- Computed Areas Summary -->
+                        <div class="space-y-2 pt-2 text-xs border-t border-slate-200">
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">Carré $a^2$ :</span>
+                                <span id="calc-a2" class="font-mono font-bold text-emerald-700">16</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">2 Rectangles $2ab$ :</span>
+                                <span id="calc-2ab" class="font-mono font-bold text-emerald-700">2 &times; 8 = 16</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">Carré $b^2$ :</span>
+                                <span id="calc-b2" class="font-mono font-bold text-emerald-700">4</span>
+                            </div>
+                            <div class="flex justify-between pt-2 border-t border-slate-300 font-bold text-sm text-slate-900">
+                                <span>Aire Totale $(a+b)^2$ :</span>
+                                <span id="calc-total" class="font-mono text-emerald-800">36</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas -->
+                    <div class="lg:col-span-7 flex justify-center">
+                        <div class="chart-container">
+                            <canvas id="geom-canvas" class="interactive-canvas w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solved Examples Section 2 -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-900">2.1 Exemples Résolus du Cours (10 Problèmes)</h3>
+                    <button onclick="toggleAllSolved('solved-prod')" class="text-xs text-brand-600 font-semibold hover:underline">
+                        Tout afficher / masquer
+                    </button>
+                </div>
+                <div id="solved-prod-list" class="space-y-3">
+                    <!-- Solved items populated by JS -->
+                </div>
+            </div>
+
+            <!-- Exercises 6 to 10 Module -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold text-slate-900">2.2 Séquence d'Exercices de la Section 2 (Exercices 6 à 10)</h3>
+                
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="showExerciseGroup('ex-6')" id="btn-ex-6" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-brand-600 bg-brand-600 text-white">Exercice 6 (Carré somme)</button>
+                    <button onclick="showExerciseGroup('ex-7')" id="btn-ex-7" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 7 (Carré différence)</button>
+                    <button onclick="showExerciseGroup('ex-8')" id="btn-ex-8" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 8 (Binômes conjugués)</button>
+                    <button onclick="showExerciseGroup('ex-9')" id="btn-ex-9" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 9 (Mélange de développements)</button>
+                    <button onclick="showExerciseGroup('ex-10')" id="btn-ex-10" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 10 (Factorisation $a^2-b^2$)</button>
+                </div>
+
+                <div id="exercise-display-container-2" class="bg-white rounded-xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: ÉQUATION D'UNE DROITE              -->
+        <!-- ========================================== -->
+        <section id="tab-droite" class="hidden space-y-8">
+            <!-- Required Introductory Paragraph -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md">Chapitre 0.3</span>
+                <h2 class="text-2xl font-bold text-slate-900">3. L'Équation d'une Droite dans le Plan</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Cette section étudie l'expression cartésienne réduite d'une droite non verticale dans le plan orthonormé $y = mx + p$. Le paramètre $m$ représente le <strong>coefficient angulaire (ou pente)</strong> mesurant la variation $\frac{\Delta y}{\Delta x}$, tandis que $p$ désigne l'<strong>ordonnée à l'origine</strong>. Explorez la théorie, entraînez-vous sur notre <strong>Traceur Graphique Cartésien</strong> interactif, visualisez les 10 exemples résolus et résolvez les séries d'exercices autocorrectifs (Exercices 11 à 15).
+                </p>
+            </div>
+
+            <!-- Theory Cards -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm">
+                <h3 class="text-lg font-bold text-slate-900">Propriétés Réduites &amp; Formules Clés</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="p-4 bg-amber-50/50 rounded-lg border border-amber-200/80 space-y-2">
+                        <strong class="text-amber-900 block font-bold">Pente entre deux points $A(x_A, y_A)$ et $B(x_B, y_B)$</strong>
+                        <p class="text-slate-600 text-xs">Le coefficient angulaire $m$ mesure l'inclinaison :</p>
+                        <p class="font-mono text-amber-800 font-semibold">$m = \frac{y_B - y_A}{x_B - x_A} \quad (x_A \neq x_B)$</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+                        <strong class="text-slate-900 block font-bold">Droites Particulières &amp; Parallélisme</strong>
+                        <ul class="text-xs text-slate-600 space-y-1 list-disc list-inside">
+                            <li>Droite horizontale : $y = p$ (pente $m = 0$).</li>
+                            <li>Droite verticale : $x = k$ (pente non définie).</li>
+                            <li>Droites parallèles $\iff$ même pente ($m_1 = m_2$).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Cartesian Graphic Plotter Canvas -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                        <span class="text-xs font-semibold text-amber-600 uppercase tracking-widest">Outil Interactif</span>
+                        <h3 class="text-xl font-bold text-slate-900">Traceur de Droite Cartésien Dynamique</h3>
+                    </div>
+                    <div class="flex space-x-2 text-xs font-semibold">
+                        <button id="mode-btn-mp" onclick="setPlotterMode('mp')" class="px-3 py-1.5 rounded-lg bg-amber-600 text-white">Mode $m$ et $p$</button>
+                        <button id="mode-btn-ab" onclick="setPlotterMode('ab')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">Mode 2 Points $A, B$</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Plotter Controls -->
+                    <div class="lg:col-span-5 bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                        <!-- Mode MP controls -->
+                        <div id="ctrl-mode-mp" class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                    <span>Pente $m$</span>
+                                    <span id="val-plot-m" class="text-amber-700">2</span>
+                                </div>
+                                <input type="range" id="slider-m" min="-5" max="5" value="2" step="0.5" oninput="updateLinePlot()" class="w-full accent-amber-600">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                    <span>Ordonnée à l'origine $p$</span>
+                                    <span id="val-plot-p" class="text-amber-700">-1</span>
+                                </div>
+                                <input type="range" id="slider-p" min="-8" max="8" value="-1" step="1" oninput="updateLinePlot()" class="w-full accent-amber-600">
+                            </div>
+                        </div>
+
+                        <!-- Mode AB controls -->
+                        <div id="ctrl-mode-ab" class="hidden space-y-3 text-xs">
+                            <p class="font-bold text-slate-800">Coordonnées des points $A$ et $B$ :</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-500 mb-0.5">$x_A$</label>
+                                    <input type="number" id="pt-xa" value="1" onchange="updateLinePlot()" class="w-full p-1.5 border rounded bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-0.5">$y_A$</label>
+                                    <input type="number" id="pt-ya" value="2" onchange="updateLinePlot()" class="w-full p-1.5 border rounded bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-0.5">$x_B$</label>
+                                    <input type="number" id="pt-xb" value="3" onchange="updateLinePlot()" class="w-full p-1.5 border rounded bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-500 mb-0.5">$y_B$</label>
+                                    <input type="number" id="pt-yb" value="8" onchange="updateLinePlot()" class="w-full p-1.5 border rounded bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Line Equation Summary Card -->
+                        <div class="pt-3 border-t border-slate-200 text-xs space-y-2">
+                            <div class="text-slate-500">Équation cartésienne réduite :</div>
+                            <div id="plot-eq-res" class="text-base font-mono font-bold text-amber-800 bg-amber-100/60 p-2 rounded text-center">
+                                $y = 2x - 1$
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-1 text-slate-600">
+                                <div>Inter. Axe Y : <span id="plot-int-y" class="font-mono font-semibold">(0, -1)</span></div>
+                                <div>Inter. Axe X : <span id="plot-int-x" class="font-mono font-semibold">(0.5, 0)</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas -->
+                    <div class="lg:col-span-7 flex justify-center">
+                        <div class="chart-container">
+                            <canvas id="line-canvas" class="interactive-canvas w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solved Examples Section 3 -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-900">3.1 Exemples Résolus du Cours (10 Problèmes)</h3>
+                    <button onclick="toggleAllSolved('solved-droite')" class="text-xs text-brand-600 font-semibold hover:underline">
+                        Tout afficher / masquer
+                    </button>
+                </div>
+                <div id="solved-droite-list" class="space-y-3">
+                    <!-- Solved items populated by JS -->
+                </div>
+            </div>
+
+            <!-- Exercises 11 to 15 Module -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold text-slate-900">3.2 Séquence d'Exercices de la Section 3 (Exercices 11 à 15)</h3>
+                
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="showExerciseGroup('ex-11')" id="btn-ex-11" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-brand-600 bg-brand-600 text-white">Exercice 11 (Calcul de pente $m$)</button>
+                    <button onclick="showExerciseGroup('ex-12')" id="btn-ex-12" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 12 ($y=mx+p$ via $m$ &amp; $P$)</button>
+                    <button onclick="showExerciseGroup('ex-13')" id="btn-ex-13" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 13 (Équation via 2 points)</button>
+                    <button onclick="showExerciseGroup('ex-14')" id="btn-ex-14" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 14 (Forme réduite &amp; pente)</button>
+                    <button onclick="showExerciseGroup('ex-15')" id="btn-ex-15" class="ex-tab-btn px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">Exercice 15 (Parallélisme &amp; Intersections)</button>
+                </div>
+
+                <div id="exercise-display-container-3" class="bg-white rounded-xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: REVISION QUIZ MODE                  -->
+        <!-- ========================================== -->
+        <section id="tab-quiz" class="hidden space-y-8">
+            <!-- Required Introductory Paragraph -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-1 rounded-md">Mode Évaluation</span>
+                <h2 class="text-2xl font-bold text-slate-900">Quiz de Révision &amp; Entraînement Synthétique</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Ce mode interactif génère une série aléatoire d'exercices tirés au sort parmi l'ensemble des 15 exercices du cours (150 questions au total). Testez votre maîtrise globale dans des conditions d'examen, recevez un bilan d'évaluation instantané et visualisez les corrigés détaillés.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Générateur de Quiz Personnalisé</h3>
+                        <p class="text-xs text-slate-500">Choisissez le nombre de questions et les chapitres ciblés.</p>
+                    </div>
+                    <button onclick="generateRandomQuiz()" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-sm transition-colors">
+                        &circlearrowright; Générer une nouvelle série
+                    </button>
+                </div>
+
+                <div id="quiz-questions-list" class="space-y-6">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-medium text-slate-700">Chapitre 0 : Les Essentiels &bull; Application Web Interactive d'Apprentissage Mathématique</p>
+            <p>Conçu pour l'exploration, la mise en pratique et la maîtrise des notions fondamentales.</p>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC & APPLICATION DATA       -->
+    <!-- ========================================== -->
+    <script>
+        // MASTER DATA STRUCTURE: 15 EXERCISES WITH ALL 150 QUESTIONS
+        const EXERCISES_DATA = {
+            'ex-1': {
+                id: 'ex-1', title: 'Exercice 1 : Équations linéaires de base', chapter: 1,
+                items: [
+                    { id: 'ex1_1', q: 'x + 4 = 9', ans: ['5', 'x=5'], hint: 'Souststraire 4 des deux côtés.', sol: 'x = 9 - 4 \\Rightarrow x = 5' },
+                    { id: 'ex1_2', q: 'x - 7 = 2', ans: ['9', 'x=9'], hint: 'Ajouter 7 des deux côtés.', sol: 'x = 2 + 7 \\Rightarrow x = 9' },
+                    { id: 'ex1_3', q: '3x = 21', ans: ['7', 'x=7'], hint: 'Diviser par 3.', sol: 'x = \\frac{21}{3} \\Rightarrow x = 7' },
+                    { id: 'ex1_4', q: '\\frac{x}{5} = 4', ans: ['20', 'x=20'], hint: 'Multiplier par 5.', sol: 'x = 4 \\cdot 5 \\Rightarrow x = 20' },
+                    { id: 'ex1_5', q: '2x + 1 = 7', ans: ['3', 'x=3'], hint: 'Souststraire 1 puis diviser par 2.', sol: '2x = 6 \\Rightarrow x = 3' },
+                    { id: 'ex1_6', q: '4x - 3 = 13', ans: ['4', 'x=4'], hint: 'Ajouter 3 puis diviser par 4.', sol: '4x = 16 \\Rightarrow x = 4' },
+                    { id: 'ex1_7', q: 'x + 8 = 3', ans: ['-5', 'x=-5'], hint: 'Souststraire 8.', sol: 'x = 3 - 8 \\Rightarrow x = -5' },
+                    { id: 'ex1_8', q: '5x = 0', ans: ['0', 'x=0'], hint: 'Diviser par 5.', sol: 'x = \\frac{0}{5} \\Rightarrow x = 0' },
+                    { id: 'ex1_9', q: 'x - (-2) = 5', ans: ['3', 'x=3'], hint: 'x + 2 = 5.', sol: 'x + 2 = 5 \\Rightarrow x = 3' },
+                    { id: 'ex1_10', q: '-2x = 10', ans: ['-5', 'x=-5'], hint: 'Diviser par -2.', sol: 'x = \\frac{10}{-2} \\Rightarrow x = -5' }
+                ]
+            },
+            'ex-2': {
+                id: 'ex-2', title: 'Exercice 2 : Inconnue présent dans les deux membres', chapter: 1,
+                items: [
+                    { id: 'ex2_1', q: '3x + 2 = x + 10', ans: ['4', 'x=4'], hint: 'Regrouper les x à gauche : 3x - x = 10 - 2', sol: '2x = 8 \\Rightarrow x = 4' },
+                    { id: 'ex2_2', q: '5x - 4 = 2x + 11', ans: ['5', 'x=5'], hint: '5x - 2x = 11 + 4', sol: '3x = 15 \\Rightarrow x = 5' },
+                    { id: 'ex2_3', q: '7x + 1 = 4x - 8', ans: ['-3', 'x=-3'], hint: '7x - 4x = -8 - 1', sol: '3x = -9 \\Rightarrow x = -3' },
+                    { id: 'ex2_4', q: 'x - 5 = 3x + 3', ans: ['-4', 'x=-4'], hint: 'x - 3x = 3 + 5', sol: '-2x = 8 \\Rightarrow x = -4' },
+                    { id: 'ex2_5', q: '6x + 2 = 6x + 5', ans: ['impossible', 'pas de solution', 'vide'], hint: '6x - 6x = 5 - 2 \\Rightarrow 0 = 3', sol: '0 = 3 \\Rightarrow \\text{Équation impossible (pas de solution)}' },
+                    { id: 'ex2_6', q: '2x - 1 = x + 4', ans: ['5', 'x=5'], hint: '2x - x = 4 + 1', sol: 'x = 5' },
+                    { id: 'ex2_7', q: '8x - 3 = 5x + 12', ans: ['5', 'x=5'], hint: '8x - 5x = 12 + 3', sol: '3x = 15 \\Rightarrow x = 5' },
+                    { id: 'ex2_8', q: '4x + 7 = 2x - 1', ans: ['-4', 'x=-4'], hint: '4x - 2x = -1 - 7', sol: '2x = -8 \\Rightarrow x = -4' },
+                    { id: 'ex2_9', q: '9x - 2 = 7x + 6', ans: ['4', 'x=4'], hint: '9x - 7x = 6 + 2', sol: '2x = 8 \\Rightarrow x = 4' },
+                    { id: 'ex2_10', q: 'x + x + x = 15', ans: ['5', 'x=5'], hint: '3x = 15', sol: '3x = 15 \\Rightarrow x = 5' }
+                ]
+            },
+            'ex-3': {
+                id: 'ex-3', title: 'Exercice 3 : Équations avec parenthèses', chapter: 1,
+                items: [
+                    { id: 'ex3_1', q: '2(x + 3) = 14', ans: ['4', 'x=4'], hint: 'Développer : 2x + 6 = 14', sol: '2x + 6 = 14 \\Rightarrow 2x = 8 \\Rightarrow x = 4' },
+                    { id: 'ex3_2', q: '4(x - 1) = 20', ans: ['6', 'x=6'], hint: '4x - 4 = 20', sol: '4x = 24 \\Rightarrow x = 6' },
+                    { id: 'ex3_3', q: '3(2x + 1) = 27', ans: ['4', 'x=4'], hint: '6x + 3 = 27', sol: '6x = 24 \\Rightarrow x = 4' },
+                    { id: 'ex3_4', q: '-2(x - 4) = 6', ans: ['1', 'x=1'], hint: '-2x + 8 = 6', sol: '-2x = -2 \\Rightarrow x = 1' },
+                    { id: 'ex3_5', q: '5(x + 2) = 3(x + 6)', ans: ['4', 'x=4'], hint: '5x + 10 = 3x + 18', sol: '2x = 8 \\Rightarrow x = 4' },
+                    { id: 'ex3_6', q: '2(3x - 1) = 4(x + 2)', ans: ['5', 'x=5'], hint: '6x - 2 = 4x + 8', sol: '2x = 10 \\Rightarrow x = 5' },
+                    { id: 'ex3_7', q: '4(x - 2) - 2x = 10', ans: ['9', 'x=9'], hint: '4x - 8 - 2x = 10', sol: '2x = 18 \\Rightarrow x = 9' },
+                    { id: 'ex3_8', q: '3(x + 1) + 2(x - 2) = 9', ans: ['2', 'x=2'], hint: '3x + 3 + 2x - 4 = 9', sol: '5x - 1 = 9 \\Rightarrow 5x = 10 \\Rightarrow x = 2' },
+                    { id: 'ex3_9', q: '-(x + 3) = 2(x - 6)', ans: ['3', 'x=3'], hint: '-x - 3 = 2x - 12', sol: '-3x = -9 \\Rightarrow x = 3' },
+                    { id: 'ex3_10', q: '5x - 2(x - 1) = 11', ans: ['3', 'x=3'], hint: '5x - 2x + 2 = 11', sol: '3x = 9 \\Rightarrow x = 3' }
+                ]
+            },
+            'ex-4': {
+                id: 'ex-4', title: 'Exercice 4 : Équations avec fractions', chapter: 1,
+                items: [
+                    { id: 'ex4_1', q: '\\frac{x}{2} + 3 = 7', ans: ['8', 'x=8'], hint: 'x/2 = 4', sol: '\\frac{x}{2} = 4 \\Rightarrow x = 8' },
+                    { id: 'ex4_2', q: '\\frac{x}{3} - 1 = 4', ans: ['15', 'x=15'], hint: 'x/3 = 5', sol: '\\frac{x}{3} = 5 \\Rightarrow x = 15' },
+                    { id: 'ex4_3', q: '\\frac{2x}{5} = 6', ans: ['15', 'x=15'], hint: '2x = 30', sol: '2x = 30 \\Rightarrow x = 15' },
+                    { id: 'ex4_4', q: '\\frac{x}{4} + \\frac{x}{2} = 6', ans: ['8', 'x=8'], hint: 'Même dénominateur (4) : x/4 + 2x/4 = 3x/4 = 6', sol: '3x = 24 \\Rightarrow x = 8' },
+                    { id: 'ex4_5', q: '\\frac{x - 1}{2} = 5', ans: ['11', 'x=11'], hint: 'x - 1 = 10', sol: 'x - 1 = 10 \\Rightarrow x = 11' },
+                    { id: 'ex4_6', q: '\\frac{x + 2}{3} = \\frac{x}{2}', ans: ['4', 'x=4'], hint: 'Produit en croix : 2(x + 2) = 3x', sol: '2x + 4 = 3x \\Rightarrow x = 4' },
+                    { id: 'ex4_7', q: '\\frac{2x}{3} - 1 = \\frac{x}{6}', ans: ['2', 'x=2'], hint: 'Multiplier par 6 : 4x - 6 = x', sol: '3x = 6 \\Rightarrow x = 2' },
+                    { id: 'ex4_8', q: '\\frac{x}{2} + \\frac{1}{4} = \\frac{3}{4}', ans: ['1', 'x=1'], hint: 'x/2 = 2/4 = 1/2', sol: '\\frac{x}{2} = \\frac{1}{2} \\Rightarrow x = 1' },
+                    { id: 'ex4_9', q: '\\frac{3x - 1}{4} = 2', ans: ['3', 'x=3'], hint: '3x - 1 = 8', sol: '3x = 9 \\Rightarrow x = 3' },
+                    { id: 'ex4_10', q: '\\frac{x}{5} - \\frac{x}{2} = -3', ans: ['10', 'x=10'], hint: 'Même dénominateur (10) : 2x/10 - 5x/10 = -3x/10 = -3', sol: '-3x = -30 \\Rightarrow x = 10' }
+                ]
+            },
+            'ex-5': {
+                id: 'ex-5', title: 'Exercice 5 : Décimaux, cas particuliers & radicaux', chapter: 1,
+                items: [
+                    { id: 'ex5_1', q: '2,5x = 10', ans: ['4', 'x=4'], hint: 'x = 10 / 2,5', sol: 'x = \\frac{10}{2,5} = 4' },
+                    { id: 'ex5_2', q: '0,5x + 2 = 4', ans: ['4', 'x=4'], hint: '0,5x = 2', sol: 'x = \\frac{2}{0,5} = 4' },
+                    { id: 'ex5_3', q: 'x - 0,1x = 1,8', ans: ['2', 'x=2'], hint: '0,9x = 1,8', sol: '0,9x = 1,8 \\Rightarrow x = 2' },
+                    { id: 'ex5_4', q: '1,2x - 3 = 0,6x + 3', ans: ['10', 'x=10'], hint: '0,6x = 6', sol: '0,6x = 6 \\Rightarrow x = 10' },
+                    { id: 'ex5_5', q: '3(0,5x + 1) = 4,5', ans: ['1', 'x=1'], hint: '1,5x + 3 = 4,5', sol: '1,5x = 1,5 \\Rightarrow x = 1' },
+                    { id: 'ex5_6', q: '\\frac{x}{0,2} = 15', ans: ['3', 'x=3'], hint: 'x = 15 * 0,2', sol: 'x = 15 \\cdot 0,2 = 3' },
+                    { id: 'ex5_7', q: '4x - (x + 2) = 3(x - 1) + 1', ans: ['indetermine', 'tout x', 'r', 'infini'], hint: '3x - 2 = 3x - 2 \\Rightarrow 0 = 0', sol: '0 = 0 \\Rightarrow \\text{Indéterminé (Vrai pour tout } x \\in \\mathbb{R})' },
+                    { id: 'ex5_8', q: '\\frac{2x + 1}{3} - \\frac{x - 2}{4} = 2', ans: ['2', 'x=2'], hint: 'Même dénominateur (12) : 4(2x+1) - 3(x-2) = 24', sol: '8x + 4 - 3x + 6 = 24 \\Rightarrow 5x + 10 = 24 \\Rightarrow 5x = 10 \\Rightarrow x = 2' },
+                    { id: 'ex5_9', q: '5(x - 0,2) = 4x + 1', ans: ['2', 'x=2'], hint: '5x - 1 = 4x + 1', sol: 'x = 2' },
+                    { id: 'ex5_10', q: 'x\\sqrt{2} = 4', ans: ['2sqrt(2)', '2\\sqrt{2}', '2sqrt2', '2.83'], hint: 'x = 4 / sqrt(2) = 2*sqrt(2)', sol: 'x = \\frac{4}{\\sqrt{2}} = \\frac{4\\sqrt{2}}{2} = 2\\sqrt{2}' }
+                ]
+            },
+            'ex-6': {
+                id: 'ex-6', title: 'Exercice 6 : Développer (Carré d\'une somme)', chapter: 2,
+                items: [
+                    { id: 'ex6_1', q: '(x + 1)^2', ans: ['x^2+2x+1', 'x2+2x+1'], hint: 'a=x, b=1', sol: 'x^2 + 2(x)(1) + 1^2 = x^2 + 2x + 1' },
+                    { id: 'ex6_2', q: '(x + 4)^2', ans: ['x^2+8x+16', 'x2+8x+16'], hint: 'a=x, b=4', sol: 'x^2 + 2(x)(4) + 4^2 = x^2 + 8x + 16' },
+                    { id: 'ex6_3', q: '(a + 5)^2', ans: ['a^2+10a+25', 'a2+10a+25'], hint: 'Variable a', sol: 'a^2 + 10a + 25' },
+                    { id: 'ex6_4', q: '(y + 2)^2', ans: ['y^2+4y+4', 'y2+4y+4'], hint: 'Variable y', sol: 'y^2 + 4y + 4' },
+                    { id: 'ex6_5', q: '(2x + 1)^2', ans: ['4x^2+4x+1', '4x2+4x+1'], hint: '(2x)^2 = 4x^2', sol: '(2x)^2 + 2(2x)(1) + 1^2 = 4x^2 + 4x + 1' },
+                    { id: 'ex6_6', q: '(3a + 2)^2', ans: ['9a^2+12a+4', '9a2+12a+4'], hint: '(3a)^2 = 9a^2', sol: '9a^2 + 12a + 4' },
+                    { id: 'ex6_7', q: '(x + 10)^2', ans: ['x^2+20x+100', 'x2+20x+100'], hint: 'a=x, b=10', sol: 'x^2 + 20x + 100' },
+                    { id: 'ex6_8', q: '(4x + 3)^2', ans: ['16x^2+24x+9', '16x2+24x+9'], hint: '(4x)^2 = 16x^2', sol: '16x^2 + 24x + 9' },
+                    { id: 'ex6_9', q: '(5 + x)^2', ans: ['25+10x+x^2', 'x^2+10x+25'], hint: 'a=5, b=x', sol: '25 + 10x + x^2' },
+                    { id: 'ex6_10', q: '(2a + 3b)^2', ans: ['4a^2+12ab+9b^2', '4a2+12ab+9b2'], hint: '2*2a*3b = 12ab', sol: '4a^2 + 12ab + 9b^2' }
+                ]
+            },
+            'ex-7': {
+                id: 'ex-7', title: 'Exercice 7 : Développer (Carré d\'une différence)', chapter: 2,
+                items: [
+                    { id: 'ex7_1', q: '(x - 2)^2', ans: ['x^2-4x+4', 'x2-4x+4'], hint: 'a=x, b=2', sol: 'x^2 - 4x + 4' },
+                    { id: 'ex7_2', q: '(x - 5)^2', ans: ['x^2-10x+25', 'x2-10x+25'], hint: 'a=x, b=5', sol: 'x^2 - 10x + 25' },
+                    { id: 'ex7_3', q: '(y - 1)^2', ans: ['y^2-2y+1', 'y2-2y+1'], hint: 'a=y, b=1', sol: 'y^2 - 2y + 1' },
+                    { id: 'ex7_4', q: '(a - 6)^2', ans: ['a^2-12a+36', 'a2-12a+36'], hint: 'a=a, b=6', sol: 'a^2 - 12a + 36' },
+                    { id: 'ex7_5', q: '(3x - 1)^2', ans: ['9x^2-6x+1', '9x2-6x+1'], hint: '(3x)^2 = 9x^2', sol: '9x^2 - 6x + 1' },
+                    { id: 'ex7_6', q: '(2a - 5)^2', ans: ['4a^2-20a+25', '4a2-20a+25'], hint: 'a=2a, b=5', sol: '4a^2 - 20a + 25' },
+                    { id: 'ex7_7', q: '(4 - x)^2', ans: ['16-8x+x^2', 'x^2-8x+16'], hint: 'a=4, b=x', sol: '16 - 8x + x^2' },
+                    { id: 'ex7_8', q: '(5x - 2)^2', ans: ['25x^2-20x+4', '25x2-20x+4'], hint: '(5x)^2 = 25x^2', sol: '25x^2 - 20x + 4' },
+                    { id: 'ex7_9', q: '(x - 8)^2', ans: ['x^2-16x+64', 'x2-16x+64'], hint: 'a=x, b=8', sol: 'x^2 - 16x + 64' },
+                    { id: 'ex7_10', q: '(3a - 4b)^2', ans: ['9a^2-24ab+16b^2', '9a2-24ab+16b2'], hint: '2*3a*4b = 24ab', sol: '9a^2 - 24ab + 16b^2' }
+                ]
+            },
+            'ex-8': {
+                id: 'ex-8', title: 'Exercice 8 : Développer (Binômes conjugués)', chapter: 2,
+                items: [
+                    { id: 'ex8_1', q: '(x + 3)(x - 3)', ans: ['x^2-9', 'x2-9'], hint: 'a^2 - b^2', sol: 'x^2 - 3^2 = x^2 - 9' },
+                    { id: 'ex8_2', q: '(x - 2)(x + 2)', ans: ['x^2-4', 'x2-4'], hint: 'a=x, b=2', sol: 'x^2 - 4' },
+                    { id: 'ex8_3', q: '(a + 5)(a - 5)', ans: ['a^2-25', 'a2-25'], hint: 'a=a, b=5', sol: 'a^2 - 25' },
+                    { id: 'ex8_4', q: '(y - 1)(y + 1)', ans: ['y^2-1', 'y2-1'], hint: 'a=y, b=1', sol: 'y^2 - 1' },
+                    { id: 'ex8_5', q: '(2x + 3)(2x - 3)', ans: ['4x^2-9', '4x2-9'], hint: '(2x)^2 - 3^2', sol: '4x^2 - 9' },
+                    { id: 'ex8_6', q: '(4a - 1)(4a + 1)', ans: ['16a^2-1', '16a2-1'], hint: '(4a)^2 - 1^2', sol: '16a^2 - 1' },
+                    { id: 'ex8_7', q: '(5 + x)(5 - x)', ans: ['25-x^2', '25-x2'], hint: '5^2 - x^2', sol: '25 - x^2' },
+                    { id: 'ex8_8', q: '(3x - 2)(3x + 2)', ans: ['9x^2-4', '9x2-4'], hint: '(3x)^2 - 2^2', sol: '9x^2 - 4' },
+                    { id: 'ex8_9', q: '(10 - x)(10 + x)', ans: ['100-x^2', '100-x2'], hint: '10^2 - x^2', sol: '100 - x^2' },
+                    { id: 'ex8_10', q: '(2a + 5b)(2a - 5b)', ans: ['4a^2-25b^2', '4a2-25b2'], hint: '(2a)^2 - (5b)^2', sol: '4a^2 - 25b^2' }
+                ]
+            },
+            'ex-9': {
+                id: 'ex-9', title: 'Exercice 9 : Mélange de développements', chapter: 2,
+                items: [
+                    { id: 'ex9_1', q: '(x + 6)^2', ans: ['x^2+12x+36', 'x2+12x+36'], hint: 'Carré de somme', sol: 'x^2 + 12x + 36' },
+                    { id: 'ex9_2', q: '(2x - 3)^2', ans: ['4x^2-12x+9', '4x2-12x+9'], hint: 'Carré de différence', sol: '4x^2 - 12x + 9' },
+                    { id: 'ex9_3', q: '(x - 4)(x + 4)', ans: ['x^2-16', 'x2-16'], hint: 'Produit conjugué', sol: 'x^2 - 16' },
+                    { id: 'ex9_4', q: '(3x + 1)^2', ans: ['9x^2+6x+1', '9x2+6x+1'], hint: 'Carré de somme', sol: '9x^2 + 6x + 1' },
+                    { id: 'ex9_5', q: '(5x - 4)(5x + 4)', ans: ['25x^2-16', '25x2-16'], hint: 'Produit conjugué', sol: '25x^2 - 16' },
+                    { id: 'ex9_6', q: '(-x + 5)^2', ans: ['x^2-10x+25', 'x2-10x+25', '25-10x+x^2'], hint: '(5-x)^2', sol: 'x^2 - 10x + 25' },
+                    { id: 'ex9_7', q: '(4x - 5)^2', ans: ['16x^2-40x+25', '16x2-40x+25'], hint: 'Carré de différence', sol: '16x^2 - 40x + 25' },
+                    { id: 'ex9_8', q: '(x^2 + 2)^2', ans: ['x^4+4x^2+4', 'x4+4x2+4'], hint: '(x^2)^2 = x^4', sol: 'x^4 + 4x^2 + 4' },
+                    { id: 'ex9_9', q: '(2x - y)(2x + y)', ans: ['4x^2-y^2', '4x2-y2'], hint: 'Produit conjugué', sol: '4x^2 - y^2' },
+                    { id: 'ex9_10', q: '(\\frac{x}{2} + 1)^2', ans: ['x^2/4+x+1', 'x2/4+x+1', '1/4x^2+x+1'], hint: '(x/2)^2 = x^2/4', sol: '\\frac{x^2}{4} + x + 1' }
+                ]
+            },
+            'ex-10': {
+                id: 'ex-10', title: 'Exercice 10 : Factoriser (Différence de deux carrés)', chapter: 2,
+                items: [
+                    { id: 'ex10_1', q: 'x^2 - 4', ans: ['(x-2)(x+2)', '(x+2)(x-2)'], hint: 'a=x, b=2', sol: '(x - 2)(x + 2)' },
+                    { id: 'ex10_2', q: 'a^2 - 25', ans: ['(a-5)(a+5)', '(a+5)(a-5)'], hint: 'a=a, b=5', sol: '(a - 5)(a + 5)' },
+                    { id: 'ex10_3', q: 'y^2 - 1', ans: ['(y-1)(y+1)', '(y+1)(y-1)'], hint: 'a=y, b=1', sol: '(y - 1)(y + 1)' },
+                    { id: 'ex10_4', q: '9x^2 - 16', ans: ['(3x-4)(3x+4)', '(3x+4)(3x-4)'], hint: '9x^2=(3x)^2', sol: '(3x - 4)(3x + 4)' },
+                    { id: 'ex10_5', q: '4a^2 - 9', ans: ['(2a-3)(2a+3)', '(2a+3)(2a-3)'], hint: '4a^2=(2a)^2', sol: '(2a - 3)(2a + 3)' },
+                    { id: 'ex10_6', q: '25x^2 - 1', ans: ['(5x-1)(5x+1)', '(5x+1)(5x-1)'], hint: '25x^2=(5x)^2', sol: '(5x - 1)(5x + 1)' },
+                    { id: 'ex10_7', q: '100 - x^2', ans: ['(10-x)(10+x)', '(10+x)(10-x)'], hint: '100=10^2', sol: '(10 - x)(10 + x)' },
+                    { id: 'ex10_8', q: '36x^2 - 49', ans: ['(6x-7)(6x+7)', '(6x+7)(6x-7)'], hint: '36x^2=(6x)^2, 49=7^2', sol: '(6x - 7)(6x + 7)' },
+                    { id: 'ex10_9', q: 'x^4 - 16', ans: ['(x^2-4)(x^2+4)', '(x2-4)(x2+4)'], hint: 'x^4=(x^2)^2', sol: '(x^2 - 4)(x^2 + 4)' },
+                    { id: 'ex10_10', q: '1 - 64a^2', ans: ['(1-8a)(1+8a)', '(1+8a)(1-8a)'], hint: '64a^2=(8a)^2', sol: '(1 - 8a)(1 + 8a)' }
+                ]
+            },
+            'ex-11': {
+                id: 'ex-11', title: 'Exercice 11 : Calcul de la pente m entre deux points', chapter: 3,
+                items: [
+                    { id: 'ex11_1', q: 'A(1, 2) \\text{ et } B(3, 6)', ans: ['2', 'm=2'], hint: 'm = (6-2)/(3-1) = 4/2', sol: 'm = \\frac{6 - 2}{3 - 1} = \\frac{4}{2} = 2' },
+                    { id: 'ex11_2', q: 'A(0, 5) \\text{ et } B(2, 9)', ans: ['2', 'm=2'], hint: 'm = (9-5)/(2-0)', sol: 'm = \\frac{9 - 5}{2 - 0} = \\frac{4}{2} = 2' },
+                    { id: 'ex11_3', q: 'A(-1, 3) \\text{ et } B(2, 0)', ans: ['-1', 'm=-1'], hint: 'm = (0-3)/(2 - (-1)) = -3/3', sol: 'm = \\frac{0 - 3}{2 - (-1)} = \\frac{-3}{3} = -1' },
+                    { id: 'ex11_4', q: 'A(4, 1) \\text{ et } B(6, 1)', ans: ['0', 'm=0'], hint: 'y est constant (droite horizontale)', sol: 'm = \\frac{1 - 1}{6 - 4} = 0' },
+                    { id: 'ex11_5', q: 'A(2, -3) \\text{ et } B(3, -5)', ans: ['-2', 'm=-2'], hint: 'm = (-5 - (-3)) / (3 - 2)', sol: 'm = \\frac{-5 + 3}{1} = -2' },
+                    { id: 'ex11_6', q: 'A(-2, -4) \\text{ et } B(-1, 2)', ans: ['6', 'm=6'], hint: 'm = (2 - (-4)) / (-1 - (-2)) = 6/1', sol: 'm = \\frac{6}{1} = 6' },
+                    { id: 'ex11_7', q: 'A(5, 7) \\text{ et } B(0, -3)', ans: ['2', 'm=2'], hint: 'm = (-3 - 7) / (0 - 5) = -10/-5', sol: 'm = \\frac{-10}{-5} = 2' },
+                    { id: 'ex11_8', q: 'A(3, 4) \\text{ et } B(5, 8)', ans: ['2', 'm=2'], hint: 'm = (8 - 4) / (5 - 3)', sol: 'm = \\frac{4}{2} = 2' },
+                    { id: 'ex11_9', q: 'A(-3, 2) \\text{ et } B(1, 2)', ans: ['0', 'm=0'], hint: 'yA = yB = 2', sol: 'm = 0' },
+                    { id: 'ex11_10', q: 'A(1, 1) \\text{ et } B(4, 10)', ans: ['3', 'm=3'], hint: 'm = (10 - 1)/(4 - 1) = 9/3', sol: 'm = \\frac{9}{3} = 3' }
+                ]
+            },
+            'ex-12': {
+                id: 'ex-12', title: 'Exercice 12 : Équation y = mx + p connaissant m et P', chapter: 3,
+                items: [
+                    { id: 'ex12_1', q: 'm=2, P(0, 4)', ans: ['y=2x+4'], hint: 'p = 4 directement', sol: 'y = 2x + 4' },
+                    { id: 'ex12_2', q: 'm=3, P(1, 5)', ans: ['y=3x+2'], hint: '5 = 3(1) + p => p = 2', sol: '5 = 3(1) + p \\Rightarrow p = 2 \\Rightarrow y = 3x + 2' },
+                    { id: 'ex12_3', q: 'm=-1, P(2, 1)', ans: ['y=-x+3', 'y=-1x+3'], hint: '1 = -1(2) + p => p = 3', sol: '1 = -2 + p \\Rightarrow p = 3 \\Rightarrow y = -x + 3' },
+                    { id: 'ex12_4', q: 'm=0, P(3, -2)', ans: ['y=-2'], hint: 'Pente nulle (horizontale)', sol: 'y = -2' },
+                    { id: 'ex12_5', q: 'm=4, P(-1, -3)', ans: ['y=4x+1'], hint: '-3 = 4(-1) + p => p = 1', sol: '-3 = -4 + p \\Rightarrow p = 1 \\Rightarrow y = 4x + 1' },
+                    { id: 'ex12_6', q: 'm=-2, P(2, -1)', ans: ['y=-2x+3'], hint: '-1 = -2(2) + p => p = 3', sol: '-1 = -4 + p \\Rightarrow p = 3 \\Rightarrow y = -2x + 3' },
+                    { id: 'ex12_7', q: 'm=\\frac{1}{2}, P(4, 3)', ans: ['y=1/2x+1', 'y=x/2+1', 'y=0.5x+1'], hint: '3 = (1/2)(4) + p => 3 = 2 + p => p = 1', sol: 'y = \\frac{1}{2}x + 1' },
+                    { id: 'ex12_8', q: 'm=-3, P(-2, 5)', ans: ['y=-3x-1'], hint: '5 = -3(-2) + p => 5 = 6 + p => p = -1', sol: 'y = -3x - 1' },
+                    { id: 'ex12_9', q: 'm=1, P(0, 0)', ans: ['y=x', 'y=1x'], hint: 'Passe par l\'origine', sol: 'y = x' },
+                    { id: 'ex12_10', q: 'm=-4, P(1, -2)', ans: ['y=-4x+2'], hint: '-2 = -4(1) + p => p = 2', sol: 'y = -4x + 2' }
+                ]
+            },
+            'ex-13': {
+                id: 'ex-13', title: 'Exercice 13 : Équation passant par deux points A et B', chapter: 3,
+                items: [
+                    { id: 'ex13_1', q: 'A(0, 2) \\text{ et } B(1, 5)', ans: ['y=3x+2'], hint: 'm = (5-2)/(1-0) = 3', sol: 'm=3, p=2 \\Rightarrow y = 3x + 2' },
+                    { id: 'ex13_2', q: 'A(1, 3) \\text{ et } B(2, 5)', ans: ['y=2x+1'], hint: 'm = (5-3)/(2-1) = 2', sol: 'm=2 \\Rightarrow 3 = 2(1)+p \\Rightarrow p=1 \\Rightarrow y = 2x + 1' },
+                    { id: 'ex13_3', q: 'A(2, 1) \\text{ et } B(4, -1)', ans: ['y=-x+3'], hint: 'm = (-1-1)/(4-2) = -1', sol: '1 = -2 + p \\Rightarrow p=3 \\Rightarrow y = -x + 3' },
+                    { id: 'ex13_4', q: 'A(-1, -2) \\text{ et } B(1, 2)', ans: ['y=2x'], hint: 'm = (2 - (-2))/(1 - (-1)) = 4/2 = 2', sol: '2 = 2(1) + p \\Rightarrow p=0 \\Rightarrow y = 2x' },
+                    { id: 'ex13_5', q: 'A(3, 4) \\text{ et } B(3, 8)', ans: ['x=3'], hint: 'Abscisses identiques : droite verticale !', sol: 'x = 3' },
+                    { id: 'ex13_6', q: 'A(0, -3) \\text{ et } B(2, 1)', ans: ['y=2x-3'], hint: 'm = (1 - (-3))/2 = 2', sol: 'p = -3 \\Rightarrow y = 2x - 3' },
+                    { id: 'ex13_7', q: 'A(5, 2) \\text{ et } B(7, 2)', ans: ['y=2'], hint: 'Ordonnées identiques : droite horizontale !', sol: 'y = 2' },
+                    { id: 'ex13_8', q: 'A(-2, 5) \\text{ et } B(0, -1)', ans: ['y=-3x-1'], hint: 'm = (-1 - 5)/(0 - (-2)) = -3', sol: 'p = -1 \\Rightarrow y = -3x - 1' },
+                    { id: 'ex13_9', q: 'A(1, -1) \\text{ et } B(3, 7)', ans: ['y=4x-5'], hint: 'm = (7 - (-1))/(3-1) = 4', sol: '-1 = 4(1) + p \\Rightarrow p = -5 \\Rightarrow y = 4x - 5' },
+                    { id: 'ex13_10', q: 'A(-1, 4) \\text{ et } B(1, 0)', ans: ['y=-2x+2'], hint: 'm = (0 - 4)/(1 - (-1)) = -2', sol: '0 = -2(1) + p \\Rightarrow p = 2 \\Rightarrow y = -2x + 2' }
+                ]
+            },
+            'ex-14': {
+                id: 'ex-14', title: 'Exercice 14 : Mettre sous forme y = mx + p et donner la pente', chapter: 3,
+                items: [
+                    { id: 'ex14_1', q: 'y - 3x = 2', ans: ['y=3x+2, m=3', 'y=3x+2', 'm=3'], hint: 'Isoler y', sol: 'y = 3x + 2 \\quad (m = 3)' },
+                    { id: 'ex14_2', q: '2y - 4x = 8', ans: ['y=2x+4, m=2', 'y=2x+4', 'm=2'], hint: '2y = 4x + 8', sol: 'y = 2x + 4 \\quad (m = 2)' },
+                    { id: 'ex14_3', q: 'x + y = 5', ans: ['y=-x+5, m=-1', 'y=-x+5', 'm=-1'], hint: 'y = -x + 5', sol: 'y = -x + 5 \\quad (m = -1)' },
+                    { id: 'ex14_4', q: '3x + y - 1 = 0', ans: ['y=-3x+1, m=-3', 'y=-3x+1', 'm=-3'], hint: 'y = -3x + 1', sol: 'y = -3x + 1 \\quad (m = -3)' },
+                    { id: 'ex14_5', q: '2y - x = 4', ans: ['y=1/2x+2, m=1/2', 'y=x/2+2', 'm=0.5'], hint: '2y = x + 4', sol: 'y = \\frac{1}{2}x + 2 \\quad (m = \\frac{1}{2})' },
+                    { id: 'ex14_6', q: '3y + 6x = 9', ans: ['y=-2x+3, m=-2', 'y=-2x+3', 'm=-2'], hint: '3y = -6x + 9', sol: 'y = -2x + 3 \\quad (m = -2)' },
+                    { id: 'ex14_7', q: 'y - 2 = 4(x - 1)', ans: ['y=4x-2, m=4', 'y=4x-2', 'm=4'], hint: 'y - 2 = 4x - 4', sol: 'y = 4x - 2 \\quad (m = 4)' },
+                    { id: 'ex14_8', q: '4x - 2y = 6', ans: ['y=2x-3, m=2', 'y=2x-3', 'm=2'], hint: '2y = 4x - 6', sol: 'y = 2x - 3 \\quad (m = 2)' },
+                    { id: 'ex14_9', q: 'x - 3y = 0', ans: ['y=1/3x, m=1/3', 'y=x/3', 'm=1/3'], hint: '3y = x', sol: 'y = \\frac{1}{3}x \\quad (m = \\frac{1}{3})' },
+                    { id: 'ex14_10', q: '5x + 5y = 10', ans: ['y=-x+2, m=-1', 'y=-x+2', 'm=-1'], hint: '5y = -5x + 10', sol: 'y = -x + 2 \\quad (m = -1)' }
+                ]
+            },
+            'ex-15': {
+                id: 'ex-15', title: 'Exercice 15 : Problèmes divers (Parallélisme & Intersections)', chapter: 3,
+                items: [
+                    { id: 'ex15_1', q: '\\text{Équation de la droite passant par } (1, 2) \\text{ et parallèle à } y = 3x + 1.', ans: ['y=3x-1'], hint: 'Même pente m=3 : 2 = 3(1) + p => p = -1', sol: 'y = 3x - 1' },
+                    { id: 'ex15_2', q: '\\text{Équation de la droite passant par } (-1, 4) \\text{ et parallèle à } y = -2x - 3.', ans: ['y=-2x+2'], hint: 'm=-2 : 4 = -2(-1) + p => 4 = 2 + p => p = 2', sol: 'y = -2x + 2' },
+                    { id: 'ex15_3', q: '\\text{Le point } (2, 5) \\text{ appartient-il à } y = 2x + 1 \\text{ ? (Oui/Non)}', ans: ['oui', 'yes'], hint: '2(2) + 1 = 5 ?', sol: '2(2) + 1 = 5 \\Rightarrow \\text{Oui, le point appartient à la droite.}' },
+                    { id: 'ex15_4', q: '\\text{Le point } (3, -1) \\text{ appartient-il à } y = -x + 2 \\text{ ? (Oui/Non)}', ans: ['oui', 'yes'], hint: '-3 + 2 = -1 ?', sol: '-3 + 2 = -1 \\Rightarrow \\text{Oui, le point appartient à la droite.}' },
+                    { id: 'ex15_5', q: '\\text{Intersection de } y = 4x - 8 \\text{ avec l\'axe Y.}', ans: ['(0,-8)', '0,-8', '-8'], hint: 'Poser x = 0', sol: 'x = 0 \\Rightarrow y = -8 \\Rightarrow \\text{Point } (0, -8)' },
+                    { id: 'ex15_6', q: '\\text{Intersection de } y = 3x - 9 \\text{ avec l\'axe X.}', ans: ['(3,0)', '3,0', '3'], hint: 'Poser y = 0', sol: '0 = 3x - 9 \\Rightarrow x = 3 \\Rightarrow \\text{Point } (3, 0)' },
+                    { id: 'ex15_7', q: '\\text{Droite passant par } (0, 5) \\text{ et parallèle à l\'axe X.}', ans: ['y=5'], hint: 'Pente nulle', sol: 'y = 5' },
+                    { id: 'ex15_8', q: '\\text{Droite passant par } (4, 0) \\text{ et parallèle à l\'axe Y.}', ans: ['x=4'], hint: 'Pente verticale', sol: 'x = 4' },
+                    { id: 'ex15_9', q: '\\text{Intersection des droites } y = 2x \\text{ et } y = x + 3.', ans: ['(3,6)', '3,6', 'x=3,y=6'], hint: '2x = x + 3 => x = 3', sol: '2x = x + 3 \\Rightarrow x = 3 \\Rightarrow y = 6 \\Rightarrow \\text{Point } (3, 6)' },
+                    { id: 'ex15_10', q: '\\text{La droite } 2x - y = 4 \\text{ est-elle parallèle à } y = 2x + 7 \\text{ ? (Oui/Non)}', ans: ['oui', 'yes'], hint: 'Pente de 2x-y=4 est m=2', sol: 'y = 2x - 4 \\text{ a pour pente } m=2 \\Rightarrow \\text{Oui, elles ont la même pente.}' }
+                ]
+            }
+        };
+
+        // 30 SOLVED EXAMPLES FROM REPORT
+        const SOLVED_DATA = {
+            'solved-eq': [
+                { title: "Exemple 1 : $x + 5 = 12$", exp: "Pour isoler $x$, on soustrait 5 des deux côtés.", res: "$x = 12 - 5 \\Rightarrow x = 7$" },
+                { title: "Exemple 2 : $x - 3 = 8$", exp: "On ajoute 3 des deux côtés.", res: "$x = 8 + 3 \\Rightarrow x = 11$" },
+                { title: "Exemple 3 : $4x = 20$", exp: "On divise les deux côtés par 4.", res: "$x = \\frac{20}{4} \\Rightarrow x = 5$" },
+                { title: "Exemple 4 : $\\frac{x}{3} = 6$", exp: "On multiplie les deux côtés par 3.", res: "$x = 6 \\cdot 3 \\Rightarrow x = 18$" },
+                { title: "Exemple 5 : $2x + 7 = 15$", exp: "On soustrait d'abord 7, puis on divise par 2.", res: "$2x = 15 - 7 = 8 \\Rightarrow x = 4$" },
+                { title: "Exemple 6 : $5x - 4 = 3x + 10$", exp: "On regroupe les $x$ à gauche et les constantes à droite.", res: "$5x - 3x = 10 + 4 \\Rightarrow 2x = 14 \\Rightarrow x = 7$" },
+                { title: "Exemple 7 : $3(x - 2) = 12$", exp: "On distribue le 3, puis on isole $x$.", res: "$3x - 6 = 12 \\Rightarrow 3x = 18 \\Rightarrow x = 6$" },
+                { title: "Exemple 8 : $2(3x + 1) = 4(x - 2)$", exp: "On développe les deux membres, puis on regroupe.", res: "$6x + 2 = 4x - 8 \\Rightarrow 2x = -10 \\Rightarrow x = -5$" },
+                { title: "Exemple 9 : $\\frac{x}{2} + \\frac{x}{3} = 5$", exp: "On met au même dénominateur (6).", res: "$\\frac{3x}{6} + \\frac{2x}{6} = 5 \\Rightarrow 5x = 30 \\Rightarrow x = 6$" },
+                { title: "Exemple 10 : $-(x - 4) + 2x = 3(x + 1)$", exp: "Attention au signe moins devant la parenthèse.", res: "$-x + 4 + 2x = 3x + 3 \\Rightarrow x + 4 = 3x + 3 \\Rightarrow 2x = 1 \\Rightarrow x = \\frac{1}{2}$" }
+            ],
+            'solved-prod': [
+                { title: "Exemple 1 : $(x + 3)^2$", exp: "Carré d'une somme $(a+b)^2 = a^2+2ab+b^2$.", res: "$x^2 + 2(x)(3) + 3^2 = x^2 + 6x + 9$" },
+                { title: "Exemple 2 : $(2x + 5)^2$", exp: "Attention à élever $(2x)$ au carré : $(2x)^2 = 4x^2$.", res: "$(2x)^2 + 2(2x)(5) + 5^2 = 4x^2 + 20x + 25$" },
+                { title: "Exemple 3 : $(x - 4)^2$", exp: "Carré d'une différence $(a-b)^2 = a^2-2ab+b^2$.", res: "$x^2 - 2(x)(4) + 4^2 = x^2 - 8x + 16$" },
+                { title: "Exemple 4 : $(3x - 1)^2$", exp: "Application avec $a=3x$ et $b=1$.", res: "$(3x)^2 - 2(3x)(1) + 1^2 = 9x^2 - 6x + 1$" },
+                { title: "Exemple 5 : $(x + 7)(x - 7)$", exp: "Produit de binômes conjugués $(a+b)(a-b) = a^2 - b^2$.", res: "$x^2 - 7^2 = x^2 - 49$" },
+                { title: "Exemple 6 : $(5x - 2)(5x + 2)$", exp: "Application avec $a=5x$ et $b=2$.", res: "$(5x)^2 - 2^2 = 25x^2 - 4$" },
+                { title: "Exemple 7 : $(-x + 2)^2$", exp: "Réécriture $(2 - x)^2$ ou $a=-x$.", res: "$(-x)^2 + 2(-x)(2) + 2^2 = x^2 - 4x + 4$" },
+                { title: "Exemple 8 : $(x^2 + 3)^2$", exp: "Application avec $a=x^2$. $(x^2)^2 = x^4$.", res: "$(x^2)^2 + 2(x^2)(3) + 3^2 = x^4 + 6x^2 + 9$" },
+                { title: "Exemple 9 : $(\\frac{1}{2}x - 4)^2$", exp: "Développement avec coefficients fractionnaires.", res: "$(\\frac{1}{2}x)^2 - 2(\\frac{1}{2}x)(4) + 4^2 = \\frac{1}{4}x^2 - 4x + 16$" },
+                { title: "Exemple 10 : Factoriser $x^2 - 81$", exp: "Forme inverse de la différence de carrés.", res: "$x^2 - 9^2 = (x - 9)(x + 9)$" }
+            ],
+            'solved-droite': [
+                { title: "Exemple 1 : Pente 2 passant par $(0, 3)$", exp: "$m=2$ et ordonnée à l'origine $p=3$.", res: "$y = 2x + 3$" },
+                { title: "Exemple 2 : Pente entre $A(1,2)$ et $B(3,8)$", exp: "Formule $m = \\frac{y_B - y_A}{x_B - x_A}$.", res: "$m = \\frac{8 - 2}{3 - 1} = \\frac{6}{2} = 3$" },
+                { title: "Exemple 3 : Équation par $A(1,2)$ et $B(3,8)$", exp: "On sait $m=3$. $2 = 3(1) + p \\Rightarrow p = -1$.", res: "$y = 3x - 1$" },
+                { title: "Exemple 4 : Droite par $C(-2, 5)$ et de pente -1", exp: "$5 = -1(-2) + p \\Rightarrow 5 = 2 + p \\Rightarrow p = 3$.", res: "$y = -x + 3$" },
+                { title: "Exemple 5 : Pente de $2y - 4x = 6$", exp: "Forme réduite : $2y = 4x + 6 \\Rightarrow y = 2x + 3$.", res: "La pente est $m = 2$." },
+                { title: "Exemple 6 : Parallèle à $y=2x-5$ par $D(4,1)$", exp: "Même pente $m=2$. $1 = 2(4) + p \\Rightarrow p = -7$.", res: "$y = 2x - 7$" },
+                { title: "Exemple 7 : Passant par $E(1, 3)$ et $F(1, 7)$", exp: "L'abscisse est constante ($x=1$). Droite verticale.", res: "$x = 1$" },
+                { title: "Exemple 8 : Passant par $G(2, 4)$ et $H(5, 4)$", exp: "L'ordonnée est constante ($y=4$). Droite horizontale.", res: "$y = 4$" },
+                { title: "Exemple 9 : Vérifier si $I(2, 7) \\in (y = 3x + 1)$", exp: "On remplace $x=2$ : $3(2) + 1 = 7$.", res: "Oui, le point $I$ appartient à la droite." },
+                { title: "Exemple 10 : Intersection de $y=2x-4$ avec l'axe X", exp: "Sur l'axe X, $y=0$. $0 = 2x - 4 \\Rightarrow x = 2$.", res: "Point d'intersection $(2, 0)$." }
+            ]
+        };
+
+        // STATE MANAGEMENT
+        let userProgress = {}; // Stores questionId -> true
+        let currentPlotterMode = 'mp';
+
+        // APPLICATION INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSolvedLists();
+            showExerciseGroup('ex-1');
+            solveInteractiveEquation();
+            drawGeometricProof();
+            updateLinePlot();
+            generateRandomQuiz();
+            refreshMathKaTeX();
+        });
+
+        function refreshMathKaTeX() {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // NAVIGATION LOGIC
+        function switchTab(tabId) {
+            const tabs = ['tab-overview', 'tab-equations', 'tab-produits', 'tab-droite', 'tab-quiz'];
+            tabs.forEach(t => {
+                const el = document.getElementById(t);
+                if (el) el.classList.add('hidden');
+                
+                const navBtn = document.getElementById('nav-' + t);
+                if (navBtn) {
+                    navBtn.classList.remove('text-brand-600', 'bg-brand-50', 'font-semibold');
+                    navBtn.classList.add('text-slate-600');
+                }
+            });
+
+            const target = document.getElementById(tabId);
+            if (target) target.classList.remove('hidden');
+
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.add('text-brand-600', 'bg-brand-50', 'font-semibold');
+                activeNav.classList.remove('text-slate-600');
+            }
+
+            // Canvas redraw triggers if visible
+            if (tabId === 'tab-produits') setTimeout(drawGeometricProof, 50);
+            if (tabId === 'tab-droite') setTimeout(updateLinePlot, 50);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            refreshMathKaTeX();
+        }
+
+        // RENDER SOLVED EXAMPLES
+        function renderSolvedLists() {
+            for (const [key, items] of Object.entries(SOLVED_DATA)) {
+                const container = document.getElementById(key + '-list');
+                if (!container) continue;
+                
+                container.innerHTML = items.map((item, index) => `
+                    <div class="border border-slate-200 rounded-lg overflow-hidden transition-colors">
+                        <button onclick="toggleSolvedItem('${key}-${index}')" class="w-full px-4 py-3 bg-slate-50 hover:bg-slate-100 flex justify-between items-center text-left text-xs font-bold text-slate-800">
+                            <span>${item.title}</span>
+                            <span id="icon-${key}-${index}" class="text-slate-400 font-mono">+</span>
+                        </button>
+                        <div id="body-${key}-${index}" class="hidden p-4 bg-white border-t border-slate-100 text-xs space-y-2">
+                            <p class="text-slate-600">${item.exp}</p>
+                            <div class="p-2 bg-blue-50 text-blue-900 rounded font-mono font-semibold">${item.res}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleSolvedItem(id) {
+            const body = document.getElementById('body-' + id);
+            const icon = document.getElementById('icon-' + id);
+            if (body && icon) {
+                const isHidden = body.classList.contains('hidden');
+                body.classList.toggle('hidden');
+                icon.innerText = isHidden ? '-' : '+';
+                if (isHidden) refreshMathKaTeX();
+            }
+        }
+
+        function toggleAllSolved(key) {
+            const items = SOLVED_DATA[key];
+            if (!items) return;
+            const firstBody = document.getElementById(`body-${key}-0`);
+            const shouldHide = firstBody && !firstBody.classList.contains('hidden');
+            
+            items.forEach((_, idx) => {
+                const body = document.getElementById(`body-${key}-${idx}`);
+                const icon = document.getElementById(`icon-${key}-${idx}`);
+                if (body && icon) {
+                    if (shouldHide) {
+                        body.classList.add('hidden');
+                        icon.innerText = '+';
+                    } else {
+                        body.classList.remove('hidden');
+                        icon.innerText = '-';
+                    }
+                }
+            });
+            if (!shouldHide) refreshMathKaTeX();
+        }
+
+        // EXERCISE SWITCHING & RENDERING
+        function showExerciseGroup(exId) {
+            const groupData = EXERCISES_DATA[exId];
+            if (!groupData) return;
+
+            // Determine target container based on chapter
+            let targetContainerId = 'exercise-display-container';
+            if (groupData.chapter === 2) targetContainerId = 'exercise-display-container-2';
+            if (groupData.chapter === 3) targetContainerId = 'exercise-display-container-3';
+
+            const container = document.getElementById(targetContainerId);
+            if (!container) return;
+
+            // Highlight tab button
+            document.querySelectorAll('.ex-tab-btn').forEach(btn => {
+                btn.classList.remove('border-brand-600', 'bg-brand-600', 'text-white');
+                btn.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+            });
+            const activeBtn = document.getElementById('btn-' + exId);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+                activeBtn.classList.add('border-brand-600', 'bg-brand-600', 'text-white');
+            }
+
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-3 gap-2">
+                    <h4 class="text-lg font-bold text-slate-900">${groupData.title}</h4>
+                    <span class="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-semibold">10 Questions</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${groupData.items.map((item, idx) => renderExerciseCard(item, idx + 1)).join('')}
+                </div>
+            `;
+
+            refreshMathKaTeX();
+        }
+
+        function renderExerciseCard(item, num) {
+            const isSolved = !!userProgress[item.id];
+            return `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3 flex flex-col justify-between" id="card-${item.id}">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold text-slate-400">#${num}</span>
+                            <span id="badge-${item.id}" class="text-[10px] font-bold px-2 py-0.5 rounded ${isSolved ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">
+                                ${isSolved ? '&check; Réussi' : 'À résoudre'}
+                            </span>
+                        </div>
+                        <div class="text-sm font-semibold text-slate-900 mb-2 font-serif">
+                            $${item.q}$
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex gap-2">
+                            <input type="text" id="input-${item.id}" placeholder="Votre réponse..." class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-brand-500">
+                            <button onclick="checkAnswer('${item.id}')" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded transition-colors whitespace-nowrap">
+                                Vérifier
+                            </button>
+                        </div>
+                        
+                        <div id="feedback-${item.id}" class="hidden text-xs font-medium p-2 rounded"></div>
+
+                        <div class="flex justify-between items-center text-[11px] pt-1 border-t border-slate-200/60">
+                            <button onclick="toggleHint('${item.id}')" class="text-slate-500 hover:text-slate-800 underline">Indice</button>
+                            <button onclick="toggleSolution('${item.id}')" class="text-brand-600 hover:text-brand-800 font-semibold">Solution détaillée</button>
+                        </div>
+
+                        <div id="hint-${item.id}" class="hidden text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200">
+                            💡 <strong>Indice:</strong> ${item.hint}
+                        </div>
+
+                        <div id="sol-${item.id}" class="hidden text-xs text-blue-900 bg-blue-50 p-2 rounded border border-blue-200 font-mono">
+                            $$${item.sol}$$
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ANSWER CHECKING & NORMALIZATION
+        function checkAnswer(itemId) {
+            // Find item in master EXERCISES_DATA
+            let targetItem = null;
+            for (const ex of Object.values(EXERCISES_DATA)) {
+                const found = ex.items.find(i => i.id === itemId);
+                if (found) { targetItem = found; break; }
+            }
+            if (!targetItem) return;
+
+            const inputEl = document.getElementById('input-' + itemId);
+            const feedbackEl = document.getElementById('feedback-' + itemId);
+            const badgeEl = document.getElementById('badge-' + itemId);
+            if (!inputEl || !feedbackEl) return;
+
+            const userVal = normalizeStr(inputEl.value);
+            const isCorrect = targetItem.ans.some(a => normalizeStr(a) === userVal);
+
+            feedbackEl.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-red-100', 'text-red-900');
+            
+            if (isCorrect) {
+                feedbackEl.classList.add('bg-emerald-100', 'text-emerald-900');
+                feedbackEl.innerHTML = '&check; <strong>Bravo !</strong> Réponse exacte.';
+                userProgress[itemId] = true;
+                if (badgeEl) {
+                    badgeEl.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
+                    badgeEl.innerHTML = '&check; Réussi';
+                }
+            } else {
+                feedbackEl.classList.add('bg-red-100', 'text-red-900');
+                feedbackEl.innerHTML = '&cross; <strong>Incorrect.</strong> Réessayez ou consultez la solution.';
+            }
+
+            updateProgressTracker();
+        }
+
+        function normalizeStr(str) {
+            return String(str || '')
+                .toLowerCase()
+                .replace(/\s+/g, '')
+                .replace(/,/g, '.')
+                .replace(/\\/g, '')
+                .replace(/\*/g, '')
+                .replace(/frac/g, '')
+                .replace(/[{}]/g, '');
+        }
+
+        function toggleHint(itemId) {
+            const hint = document.getElementById('hint-' + itemId);
+            if (hint) hint.classList.toggle('hidden');
+        }
+
+        function toggleSolution(itemId) {
+            const sol = document.getElementById('sol-' + itemId);
+            if (sol) {
+                sol.classList.toggle('hidden');
+                if (!sol.classList.contains('hidden')) refreshMathKaTeX();
+            }
+        }
+
+        function updateProgressTracker() {
+            const solvedCount = Object.keys(userProgress).length;
+            const totalCount = 150;
+            const pct = Math.round((solvedCount / totalCount) * 100);
+
+            document.getElementById('global-progress-text').innerText = `${solvedCount} / ${totalCount} résolus`;
+            document.getElementById('global-progress-bar').style.width = `${pct}%`;
+
+            // Chapter sub-counts
+            let sec1 = 0, sec2 = 0, sec3 = 0;
+            for (const [id, done] of Object.entries(userProgress)) {
+                if (!done) continue;
+                if (id.startsWith('ex1_') || id.startsWith('ex2_') || id.startsWith('ex3_') || id.startsWith('ex4_') || id.startsWith('ex5_')) sec1++;
+                if (id.startsWith('ex6_') || id.startsWith('ex7_') || id.startsWith('ex8_') || id.startsWith('ex9_') || id.startsWith('ex10_')) sec2++;
+                if (id.startsWith('ex11_') || id.startsWith('ex12_') || id.startsWith('ex13_') || id.startsWith('ex14_') || id.startsWith('ex15_')) sec3++;
+            }
+
+            document.getElementById('prog-sec-1').innerText = `${sec1} / 50`;
+            document.getElementById('prog-sec-2').innerText = `${sec2} / 50`;
+            document.getElementById('prog-sec-3').innerText = `${sec3} / 50`;
+        }
+
+        // TOOL 1: EQUATION SOLVER SIMULATOR
+        function solveInteractiveEquation() {
+            const a = parseFloat(document.getElementById('eq-a').value) || 0;
+            const b = parseFloat(document.getElementById('eq-b').value) || 0;
+            const c = parseFloat(document.getElementById('eq-c').value) || 0;
+            const d = parseFloat(document.getElementById('eq-d').value) || 0;
+
+            const container = document.getElementById('eq-steps-container');
+            if (!container) return;
+
+            let html = `<div class="text-white font-bold text-base mb-2">Équation initiale : $${a}x ${b >= 0 ? '+ ' + b : '- ' + Math.abs(b)} = ${c}x ${d >= 0 ? '+ ' + d : '- ' + Math.abs(d)}$</div>`;
+
+            const leftX = a - c;
+            const rightConst = d - b;
+
+            html += `<p class="text-xs text-slate-300">Étape 1: Regroupement des $x$ à gauche et des constantes à droite :</p>`;
+            html += `<p class="text-blue-300">$(${a} - ${c})x = ${d} - (${b})$</p>`;
+            html += `<p class="text-blue-300">$${leftX}x = ${rightConst}$</p>`;
+
+            if (leftX === 0) {
+                if (rightConst === 0) {
+                    html += `<p class="text-emerald-400 font-bold mt-2">&check; $0 = 0$ : L'équation admet une infinité de solutions (Indéterminée).</p>`;
+                } else {
+                    html += `<p class="text-red-400 font-bold mt-2">&cross; $0 = ${rightConst}$ : L'équation est impossible (Pas de solution).</p>`;
+                }
+            } else {
+                const res = rightConst / leftX;
+                html += `<p class="text-xs text-slate-300 mt-2">Étape 2: Division par le coefficient de $x$ ($${leftX}$) :</p>`;
+                html += `<p class="text-emerald-400 text-base font-bold mt-1">&check; $x = \\frac{${rightConst}}{${leftX}} = ${Number.isInteger(res) ? res : res.toFixed(2)}$</p>`;
+            }
+
+            container.innerHTML = html;
+            refreshMathKaTeX();
+        }
+
+        // TOOL 2: GEOMETRIC PROOF CANVAS
+        function drawGeometricProof() {
+            const canvas = document.getElementById('geom-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const a = parseFloat(document.getElementById('slider-geom-a').value) || 4;
+            const b = parseFloat(document.getElementById('slider-geom-b').value) || 2;
+
+            document.getElementById('val-geom-a').innerText = `${a} unit${a > 1 ? 's' : ''}`;
+            document.getElementById('val-geom-b').innerText = `${b} unit${b > 1 ? 's' : ''}`;
+
+            document.getElementById('calc-a2').innerText = `${(a * a).toFixed(2)}`;
+            document.getElementById('calc-2ab').innerText = `2 \u00D7 ${(a * b).toFixed(2)} = ${(2 * a * b).toFixed(2)}`;
+            document.getElementById('calc-b2').innerText = `${(b * b).toFixed(2)}`;
+            document.getElementById('calc-total').innerText = `${((a + b) * (a + b)).toFixed(2)}`;
+
+            // Canvas Dimensions Setup
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const margin = 40;
+            const side = Math.min(w, h) - 2 * margin;
+            const total = a + b;
+            const pxA = (a / total) * side;
+            const pxB = (b / total) * side;
+
+            const startX = (w - side) / 2;
+            const startY = (h - side) / 2;
+
+            // 1. Zone a^2 (Top-Left, Blue)
+            ctx.fillStyle = '#dbeafe';
+            ctx.fillRect(startX, startY, pxA, pxA);
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(startX, startY, pxA, pxA);
+            ctx.fillStyle = '#1e40af';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(`a\u00B2 (${(a*a).toFixed(1)})`, startX + pxA / 2 - 20, startY + pxA / 2);
+
+            // 2. Zone ab (Top-Right, Amber)
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(startX + pxA, startY, pxB, pxA);
+            ctx.strokeStyle = '#d97706';
+            ctx.strokeRect(startX + pxA, startY, pxB, pxA);
+            ctx.fillStyle = '#92400e';
+            ctx.fillText(`a\u00D7b`, startX + pxA + pxB / 2 - 10, startY + pxA / 2);
+
+            // 3. Zone ab (Bottom-Left, Amber)
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(startX, startY + pxA, pxA, pxB);
+            ctx.strokeStyle = '#d97706';
+            ctx.strokeRect(startX, startY + pxA, pxA, pxB);
+            ctx.fillStyle = '#92400e';
+            ctx.fillText(`a\u00D7b`, startX + pxA / 2 - 10, startY + pxA + pxB / 2);
+
+            // 4. Zone b^2 (Bottom-Right, Emerald)
+            ctx.fillStyle = '#d1fae5';
+            ctx.fillRect(startX + pxA, startY + pxA, pxB, pxB);
+            ctx.strokeStyle = '#059669';
+            ctx.strokeRect(startX + pxA, startY + pxA, pxB, pxB);
+            ctx.fillStyle = '#065f46';
+            ctx.fillText(`b\u00B2`, startX + pxA + pxB / 2 - 8, startY + pxA + pxB / 2);
+        }
+
+        // TOOL 3: CARTESIAN LINE PLOTTER CANVAS
+        function setPlotterMode(mode) {
+            currentPlotterMode = mode;
+            const btnMP = document.getElementById('mode-btn-mp');
+            const btnAB = document.getElementById('mode-btn-ab');
+            const ctrlMP = document.getElementById('ctrl-mode-mp');
+            const ctrlAB = document.getElementById('ctrl-mode-ab');
+
+            if (mode === 'mp') {
+                btnMP.className = 'px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold';
+                btnAB.className = 'px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200';
+                ctrlMP.classList.remove('hidden');
+                ctrlAB.classList.add('hidden');
+            } else {
+                btnAB.className = 'px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold';
+                btnMP.className = 'px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200';
+                ctrlAB.classList.remove('hidden');
+                ctrlMP.classList.add('hidden');
+            }
+            updateLinePlot();
+        }
+
+        function updateLinePlot() {
+            const canvas = document.getElementById('line-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let m = 2, p = -1;
+
+            if (currentPlotterMode === 'mp') {
+                m = parseFloat(document.getElementById('slider-m').value) || 0;
+                p = parseFloat(document.getElementById('slider-p').value) || 0;
+                document.getElementById('val-plot-m').innerText = m;
+                document.getElementById('val-plot-p').innerText = p;
+            } else {
+                const xA = parseFloat(document.getElementById('pt-xa').value) || 0;
+                const yA = parseFloat(document.getElementById('pt-ya').value) || 0;
+                const xB = parseFloat(document.getElementById('pt-xb').value) || 0;
+                const yB = parseFloat(document.getElementById('pt-yb').value) || 0;
+
+                if (xB !== xA) {
+                    m = (yB - yA) / (xB - xA);
+                    p = yA - m * xA;
+                } else {
+                    m = 999; // Vertical indicator
+                }
+            }
+
+            // Summary text
+            const eqRes = document.getElementById('plot-eq-res');
+            const intY = document.getElementById('plot-int-y');
+            const intX = document.getElementById('plot-int-x');
+
+            if (m === 999) {
+                eqRes.innerText = '$x = \\text{constante}$';
+                intY.innerText = 'Aucun';
+                intX.innerText = 'Verticale';
+            } else {
+                const pSign = p >= 0 ? `+ ${p}` : `- ${Math.abs(p)}`;
+                eqRes.innerText = `$y = ${m === 1 ? '' : (m === -1 ? '-' : m)}x ${p === 0 ? '' : pSign}$`;
+                intY.innerText = `(0, ${p})`;
+                intX.innerText = m !== 0 ? `(${(-p/m).toFixed(1)}, 0)` : 'Parallèle axe X';
+            }
+
+            // Draw Cartesian Grid
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const originX = w / 2;
+            const originY = h / 2;
+            const scale = 25; // 25px per unit
+
+            // Grid Lines
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+
+            for (let x = originX % scale; x < w; x += scale) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = originY % scale; y < h; y += scale) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // Axes X & Y
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(w, originY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, h); ctx.stroke();
+
+            // Draw Plot Line
+            if (m !== 999) {
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                const xMin = -originX / scale;
+                const xMax = (w - originX) / scale;
+
+                const y1 = m * xMin + p;
+                const y2 = m * xMax + p;
+
+                ctx.moveTo(originX + xMin * scale, originY - y1 * scale);
+                ctx.lineTo(originX + xMax * scale, originY - y2 * scale);
+                ctx.stroke();
+
+                // Draw Y-intercept point
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.arc(originX, originY - p * scale, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            refreshMathKaTeX();
+        }
+
+        // TOOL 4: GLOBAL SEARCH FILTER
+        function filterExercisesGlobal() {
+            const query = normalizeStr(document.getElementById('global-search-input').value);
+            const box = document.getElementById('search-results-box');
+
+            if (!query || query.length < 2) {
+                box.classList.add('hidden');
+                return;
+            }
+
+            let matches = [];
+            for (const [exKey, exGroup] of Object.entries(EXERCISES_DATA)) {
+                for (const item of exGroup.items) {
+                    if (normalizeStr(exGroup.title).includes(query) || normalizeStr(item.q).includes(query) || normalizeStr(item.hint).includes(query)) {
+                        matches.push({ group: exGroup, item: item });
+                    }
+                }
+            }
+
+            if (matches.length === 0) {
+                box.innerHTML = `<p class="text-xs text-slate-500">Aucun résultat trouvé pour "${query}".</p>`;
+            } else {
+                box.innerHTML = matches.slice(0, 8).map(m => `
+                    <div onclick="jumpToSearchResult('${m.group.id}', '${m.item.id}')" class="p-2 hover:bg-slate-50 rounded border border-slate-100 cursor-pointer flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-slate-800">${m.group.title}</span>
+                            <span class="text-slate-500 font-serif ml-2">$${m.item.q}$</span>
+                        </div>
+                        <span class="text-brand-600 font-semibold">&rarr;</span>
+                    </div>
+                `).join('');
+            }
+
+            box.classList.remove('hidden');
+            refreshMathKaTeX();
+        }
+
+        function jumpToSearchResult(exId, itemId) {
+            const groupData = EXERCISES_DATA[exId];
+            if (!groupData) return;
+
+            if (groupData.chapter === 1) switchTab('tab-equations');
+            if (groupData.chapter === 2) switchTab('tab-produits');
+            if (groupData.chapter === 3) switchTab('tab-droite');
+
+            showExerciseGroup(exId);
+
+            setTimeout(() => {
+                const card = document.getElementById('card-' + itemId);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.classList.add('ring-2', 'ring-brand-500');
+                    setTimeout(() => card.classList.remove('ring-2', 'ring-brand-500'), 2000);
+                }
+            }, 200);
+
+            document.getElementById('search-results-box').classList.add('hidden');
+        }
+
+        // REVISION QUIZ GENERATOR
+        function generateRandomQuiz() {
+            const container = document.getElementById('quiz-questions-list');
+            if (!container) return;
+
+            // Pick 5 random items from all 150 questions
+            let allItems = [];
+            for (const exGroup of Object.values(EXERCISES_DATA)) {
+                allItems.push(...exGroup.items);
+            }
+
+            // Shuffle array
+            allItems.sort(() => 0.5 - Math.random());
+            const selected = allItems.slice(0, 5);
+
+            container.innerHTML = selected.map((item, idx) => `
+                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-500 font-bold">
+                        <span>Question #${idx + 1}</span>
+                        <span class="text-brand-600">Entraînement</span>
+                    </div>
+                    <div class="text-base font-bold text-slate-900 font-serif">
+                        $${item.q}$
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="quiz-input-${item.id}" placeholder="Entrez la solution..." class="w-full px-3 py-2 border rounded text-xs">
+                        <button onclick="checkAnswer('${item.id}')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded">
+                            Valider
+                        </button>
+                    </div>
+                    <div id="feedback-${item.id}" class="hidden text-xs font-medium p-2 rounded"></div>
+                    <div class="pt-2">
+                        <button onclick="toggleSolution('${item.id}')" class="text-xs text-slate-500 underline">Voir solution</button>
+                        <div id="sol-${item.id}" class="hidden text-xs text-blue-900 bg-blue-50 p-2 rounded mt-2 font-mono">
+                            $$${item.sol}$$
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            refreshMathKaTeX();
+        }
+    </script>
+</body>
+</html>
