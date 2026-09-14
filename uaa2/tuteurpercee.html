@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuteur Virtuel : Section d'un Cube</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            touch-action: none;
+        }
+        /* Custom scrollbar for steps */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5); 
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5); 
+            border-radius: 10px;
+        }
+        .step-card {
+            transition: all 0.3s ease;
+        }
+        .step-active {
+            border-color: #6366f1; /* Indigo 500 */
+            background-color: rgba(49, 46, 129, 0.4); /* Indigo 900 */
+            opacity: 1 !important;
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .step-inactive {
+            opacity: 0.4;
+            border-color: #334155; /* Slate 700 */
+            transform: scale(1);
+        }
+        .step-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col md:flex-row">
+
+    <!-- Panneau gauche : UI et Étapes -->
+    <div class="w-full md:w-1/3 lg:w-1/4 bg-slate-800 text-slate-100 flex flex-col h-2/5 md:h-full z-10 shadow-2xl border-r border-slate-700">
+        
+        <!-- En-tête du Tuteur -->
+        <div class="p-4 bg-slate-900 flex items-center gap-4 shadow-md">
+            <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-xl shadow-lg border-2 border-indigo-300 shrink-0">
+                🤖
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-white leading-tight">Mathéo</h1>
+                <p class="text-xs text-indigo-300">Tuteur Géométrie 3D</p>
+            </div>
+        </div>
+
+        <!-- Sélecteur d'exemple -->
+        <div class="px-4 py-3 bg-slate-800 border-b border-slate-700 flex gap-2">
+            <button id="btn-ex1" onclick="switchExample(1)" class="flex-1 py-1.5 text-sm font-semibold rounded-md bg-indigo-600 text-white shadow transition-colors">
+                Exemple 1
+            </button>
+            <button id="btn-ex2" onclick="switchExample(2)" class="flex-1 py-1.5 text-sm font-semibold rounded-md bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">
+                Exemple 2
+            </button>
+        </div>
+        
+        <!-- Conteneur des étapes scrollable -->
+        <div class="flex-grow p-4 overflow-y-auto custom-scrollbar flex flex-col gap-3" id="steps-container">
+            <!-- Les étapes seront injectées ici par JS -->
+        </div>
+
+        <!-- Contrôles de navigation -->
+        <div class="p-4 bg-slate-900 border-t border-slate-700 flex justify-between items-center">
+            <button id="btn-prev" onclick="prevStep()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-medium text-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                &larr; Retour
+            </button>
+            <div class="text-xs font-semibold text-slate-400">
+                Étape <span id="step-indicator">0/0</span>
+            </div>
+            <button id="btn-next" onclick="nextStep()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-medium text-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors shadow-lg shadow-indigo-500/20">
+                Suite &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- Panneau droit : Canvas 3D -->
+    <div class="w-full md:w-2/3 lg:w-3/4 bg-slate-50 flex items-center justify-center h-3/5 md:h-full relative overflow-hidden" id="canvas-container">
+        <canvas id="mathCanvas" class="max-w-full max-h-full"></canvas>
+        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded text-xs font-semibold text-slate-600 shadow-sm border border-slate-200">
+            Perspective Cavalière (Fuyantes à droite)
+        </div>
+        <div id="example-title" class="absolute top-4 left-4 bg-indigo-100 px-3 py-1.5 rounded text-sm font-bold text-indigo-800 shadow-sm border border-indigo-200">
+            <!-- Titre injecté dynamiquement -->
+        </div>
+    </div>
+
+    <script>
+        
+        // --- 1. MOTEUR MATHÉMATIQUE ---
+        // Origine A(0,0,0). X: droite, Y: fond (fuyante), Z: haut.
+        const baseCube = {
+            A: {x: 0, y: 0, z: 0},
+            B: {x: 1, y: 0, z: 0},
+            C: {x: 1, y: 1, z: 0},
+            D: {x: 0, y: 1, z: 0},
+            E: {x: 0, y: 0, z: 1},
+            F: {x: 1, y: 0, z: 1},
+            G: {x: 1, y: 1, z: 1},
+            H: {x: 0, y: 1, z: 1}
+        };
+
+        const K_FUYANTE = 0.5; // Réduction de la fuyante
+        const ALPHA = Math.PI / 4; // 45 degrés
+        const COS_A = Math.cos(ALPHA);
+        const SIN_A = Math.sin(ALPHA);
+
+        let scale = 300; 
+        let offsetX = 0;
+        let offsetY = 0;
+        
+        const canvas = document.getElementById('mathCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+
+        // Projection 3D vers 2D
+        function projeter(pt) {
+            // Y est l'axe de fuite vers la droite et le haut
+            const x2d = pt.x + pt.y * K_FUYANTE * COS_A;
+            const y2d = pt.z + pt.y * K_FUYANTE * SIN_A;
+            
+            return {
+                x: offsetX + x2d * scale,
+                y: offsetY - y2d * scale // Inversion car le Y du canvas va vers le bas
+            };
+        }
+
+        
+        // --- 2. FONCTIONS DE DESSIN ---
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawLine(p1, p2, color = '#334155', width = 2, dashed = false) {
+            const pt1 = projeter(p1);
+            const pt2 = projeter(p2);
+            ctx.beginPath();
+            ctx.moveTo(pt1.x, pt1.y);
+            ctx.lineTo(pt2.x, pt2.y);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            if (dashed) ctx.setLineDash([6, 6]);
+            else ctx.setLineDash([]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawPoint(pt, label, color = '#4f46e5', align = 'bottom') {
+            const pt2d = projeter(pt);
+            
+            // Dessin du cercle
+            ctx.beginPath();
+            ctx.arc(pt2d.x, pt2d.y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Label
+            if (label) {
+                ctx.font = 'bold 15px Inter, sans-serif';
+                let tx = pt2d.x;
+                let ty = pt2d.y;
+                
+                if(align === 'bottom') { ty += 22; tx -= 5;}
+                else if(align === 'top') { ty -= 12; tx -= 5;}
+                else if(align === 'right') { tx += 12; ty += 5;}
+                else if(align === 'left') { tx -= 18; ty += 5;}
+                else if(align === 'top-left') { tx -= 18; ty -= 12;}
+                else if(align === 'top-right') { tx += 10; ty -= 10;}
+                else if(align === 'bottom-right') { tx += 12; ty += 20;}
+                else if(align === 'bottom-left') { tx -= 18; ty += 20;}
+                
+                const metrics = ctx.measureText(label);
+                ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                ctx.fillRect(tx - 3, ty - 14, metrics.width + 6, 18);
+                ctx.fillStyle = color;
+                ctx.fillText(label, tx, ty);
+            }
+        }
+
+        function drawPolygon(pointsArr, fillColor, strokeColor) {
+            if(pointsArr.length < 3) return;
+            ctx.beginPath();
+            const start = projeter(pointsArr[0]);
+            ctx.moveTo(start.x, start.y);
+            for(let i=1; i<pointsArr.length; i++) {
+                const pt = projeter(pointsArr[i]);
+                ctx.lineTo(pt.x, pt.y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            if(strokeColor) {
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+            }
+        }
+
+        function drawCube() {
+            // Arêtes cachées
+            drawLine(baseCube.A, baseCube.D, '#94a3b8', 1.5, true);
+            drawLine(baseCube.D, baseCube.C, '#94a3b8', 1.5, true);
+            drawLine(baseCube.D, baseCube.H, '#94a3b8', 1.5, true);
+
+            // Arêtes visibles
+            drawLine(baseCube.A, baseCube.B); drawLine(baseCube.B, baseCube.F); drawLine(baseCube.F, baseCube.E); drawLine(baseCube.E, baseCube.A); // Avant
+            drawLine(baseCube.B, baseCube.C); drawLine(baseCube.C, baseCube.G); drawLine(baseCube.G, baseCube.F); // Droite
+            drawLine(baseCube.E, baseCube.H); drawLine(baseCube.H, baseCube.G); // Haut
+
+            // Labels sommets
+            const col = "#64748b";
+            drawPoint(baseCube.A, 'A', col, 'bottom-right'); drawPoint(baseCube.B, 'B', col, 'bottom');
+            drawPoint(baseCube.F, 'F', col, 'top'); drawPoint(baseCube.E, 'E', col, 'top-left');
+            drawPoint(baseCube.C, 'C', col, 'right'); drawPoint(baseCube.G, 'G', col, 'top-right');
+            drawPoint(baseCube.H, 'H', col, 'top'); 
+            drawPoint(baseCube.D, 'D', col, 'left');
+        }
+
+        
+        // --- 3. DÉFINITION DES EXEMPLES ---
+        
+        // EXEMPLE 1 : Section pentagonale
+        const ex1_pts = {
+            I: {x: 0.4, y: 0, z: 0, label: 'I', align: 'bottom'},     // Sur [AB]
+            J: {x: 1, y: 0.5, z: 0, label: 'J', align: 'bottom-right'}, // Sur [BC]
+            K: {x: 0, y: 1, z: 0.8, label: 'K', align: 'left'},       // Sur [DH]
+            P1: {x: 1.6, y: 1, z: 0, label: 'P', align: 'bottom-right'}, // Inter (IJ) et (DC)
+            L: {x: 1, y: 1, z: 0.3, label: 'L', align: 'right'},      // Inter (P1 K) et [CG]
+            M: {x: 0, y: 0, z: 0.2, label: 'M', align: 'left'}        // // (JL) par K sur [AE]
+        };
+        
+        // Fonction pour dessiner les traits de construction estompés de l'Exemple 1
+        function drawConstructionsEx1() {
+            drawLine(ex1_pts.I, ex1_pts.P1, 'rgba(245, 158, 11, 0.4)', 1.5, true); // Prolongement IJ
+            drawLine({x:0, y:1, z:0}, ex1_pts.P1, 'rgba(148, 163, 184, 0.4)', 1.5, true); // Prolongement DC
+            drawLine(ex1_pts.P1, ex1_pts.L, 'rgba(245, 158, 11, 0.4)', 1.5, true); // Ligne P-L
+            drawPoint(ex1_pts.P1, 'P', 'rgba(245, 158, 11, 0.6)', ex1_pts.P1.align);
+        }
+
+        const ex1_steps = [
+            {
+                text: "<strong>Objectif :</strong> Tracer la section du cube par le plan (IJK).",
+                draw: () => {
+                    drawPoint(ex1_pts.I, 'I', '#2563eb', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#2563eb', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#2563eb', ex1_pts.K.align);
+                }
+            },
+            {
+                text: "1. On relie I à J car I & J ∈ même plan (ABCD).",
+                draw: () => {
+                    drawLine(ex1_pts.I, ex1_pts.J, '#e11d48', 3, true); // (caché car en dessous)
+                    drawPoint(ex1_pts.I, 'I', '#2563eb', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#2563eb', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#2563eb', ex1_pts.K.align);
+                }
+            },
+            {
+                text: "2. On prolonge la droite (IJ) avec la droite (DC) cela donne le point de percée P.",
+                draw: () => {
+                    drawLine(ex1_pts.I, ex1_pts.J, '#e11d48', 3, true);
+                    drawLine(ex1_pts.I, ex1_pts.P1, '#f59e0b', 2, true);
+                    drawLine({x:0, y:1, z:0}, ex1_pts.P1, '#94a3b8', 2, true); // Prolonge DC
+                    
+                    drawPoint(ex1_pts.I, 'I', '#2563eb', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#2563eb', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#2563eb', ex1_pts.K.align);
+                    drawPoint(ex1_pts.P1, 'P', '#f59e0b', ex1_pts.P1.align);
+                }
+            },
+            {
+                text: "3. On relie P à K car P & K ∈ même plan (DCGH). La droite coupe [CG] en L.",
+                draw: () => {
+                    drawLine(ex1_pts.I, ex1_pts.J, '#e11d48', 3, true);
+                    drawConstructionsEx1();
+                    
+                    drawLine(ex1_pts.P1, ex1_pts.L, '#f59e0b', 2, true); // P vers L
+                    drawLine(ex1_pts.L, ex1_pts.K, '#e11d48', 3, true); // Section face arrière
+                    
+                    drawPoint(ex1_pts.I, 'I', '#2563eb', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#2563eb', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#2563eb', ex1_pts.K.align);
+                    drawPoint(ex1_pts.L, 'L', '#10b981', ex1_pts.L.align);
+                }
+            },
+            {
+                text: "4. On relie J à L car J & L ∈ même plan (BCGF).",
+                draw: () => {
+                    drawConstructionsEx1();
+                    
+                    drawLine(ex1_pts.I, ex1_pts.J, '#e11d48', 3, true);
+                    drawLine(ex1_pts.L, ex1_pts.K, '#e11d48', 3, true);
+                    drawLine(ex1_pts.J, ex1_pts.L, '#e11d48', 3); // Face droite visible
+                    
+                    drawPoint(ex1_pts.I, 'I', '#2563eb', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#2563eb', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#2563eb', ex1_pts.K.align);
+                    drawPoint(ex1_pts.L, 'L', '#10b981', ex1_pts.L.align);
+                }
+            },
+            {
+                text: "5. On trace la // à (JL) par K car plan (ADHE) // plan (BCGF) => (KM) qui coupe [AE] en M.",
+                draw: () => {
+                    drawConstructionsEx1();
+                    
+                    drawLine(ex1_pts.I, ex1_pts.J, '#e11d48', 3, true);
+                    drawLine(ex1_pts.L, ex1_pts.K, '#e11d48', 3, true);
+                    drawLine(ex1_pts.J, ex1_pts.L, '#e11d48', 3);
+                    
+                    drawLine(ex1_pts.K, ex1_pts.M, '#e11d48', 3, true); // Face gauche
+                    
+                    drawPoint(ex1_pts.I, 'I', '#2563eb', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#2563eb', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#2563eb', ex1_pts.K.align);
+                    drawPoint(ex1_pts.L, 'L', '#10b981', ex1_pts.L.align);
+                    drawPoint(ex1_pts.M, 'M', '#8b5cf6', ex1_pts.M.align);
+                }
+            },
+            {
+                text: "6. On relie I à M car I & M ∈ même plan (ABFE).",
+                draw: () => {
+                    drawConstructionsEx1();
+                    
+                    drawLine(ex1_pts.I, ex1_pts.J, '#e11d48', 3, true);
+                    drawLine(ex1_pts.L, ex1_pts.K, '#e11d48', 3, true);
+                    drawLine(ex1_pts.J, ex1_pts.L, '#e11d48', 3);
+                    drawLine(ex1_pts.K, ex1_pts.M, '#e11d48', 3, true);
+                    drawLine(ex1_pts.I, ex1_pts.M, '#e11d48', 3); // Face avant visible
+                    
+                    drawPoint(ex1_pts.I, 'I', '#2563eb', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#2563eb', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#2563eb', ex1_pts.K.align);
+                    drawPoint(ex1_pts.L, 'L', '#10b981', ex1_pts.L.align);
+                    drawPoint(ex1_pts.M, 'M', '#8b5cf6', ex1_pts.M.align);
+                }
+            },
+            {
+                text: "<span class='text-emerald-400'>Terminé !</span> La section est le pentagone I-J-L-K-M.",
+                draw: () => {
+                    drawConstructionsEx1();
+                    
+                    drawPolygon([ex1_pts.I, ex1_pts.J, ex1_pts.L, ex1_pts.K, ex1_pts.M], 'rgba(225, 29, 72, 0.25)');
+                    
+                    drawLine(ex1_pts.I, ex1_pts.J, '#e11d48', 3, true);
+                    drawLine(ex1_pts.L, ex1_pts.K, '#e11d48', 3, true);
+                    drawLine(ex1_pts.J, ex1_pts.L, '#e11d48', 3);
+                    drawLine(ex1_pts.K, ex1_pts.M, '#e11d48', 3, true);
+                    drawLine(ex1_pts.I, ex1_pts.M, '#e11d48', 3);
+                    
+                    drawPoint(ex1_pts.I, 'I', '#e11d48', ex1_pts.I.align);
+                    drawPoint(ex1_pts.J, 'J', '#e11d48', ex1_pts.J.align);
+                    drawPoint(ex1_pts.K, 'K', '#e11d48', ex1_pts.K.align);
+                    drawPoint(ex1_pts.L, 'L', '#e11d48', ex1_pts.L.align);
+                    drawPoint(ex1_pts.M, 'M', '#e11d48', ex1_pts.M.align);
+                }
+            }
+        ];
+
+
+        // EXEMPLE 2 : Section hexagonale
+        const ex2_pts = {
+            I: {x: 0.4, y: 0, z: 0, label: 'I', align: 'bottom'},      // Sur [AB]
+            J: {x: 0, y: 0, z: 0.6, label: 'J', align: 'left'},        // Sur [AE]
+            K: {x: 1, y: 1, z: 0.5, label: 'K', align: 'right'},       // Sur [CG]
+            P1: {x: 1, y: 0, z: -0.9, label: 'P', align: 'bottom-right'}, // Inter (IJ) et (BF)
+            L: {x: 1, y: 9/14, z: 0, label: 'L', align: 'bottom'},     // Inter (P1 K) et [BC]
+            M: {x: 0, y: 2/7, z: 1, label: 'M', align: 'top-left'},    // // (LK) par J sur [EH]
+            N: {x: 2/3, y: 1, z: 1, label: 'N', align: 'top'}          // // (JI) par K sur [GH]
+        };
+
+        // Fonction pour dessiner les traits de construction estompés de l'Exemple 2
+        function drawConstructionsEx2() {
+            drawLine(ex2_pts.I, ex2_pts.P1, 'rgba(234, 88, 12, 0.4)', 1.5, true); // Prolongement IJ
+            drawLine({x:1, y:0, z:0}, ex2_pts.P1, 'rgba(148, 163, 184, 0.4)', 1.5, true); // Prolongement BF
+            drawLine(ex2_pts.P1, ex2_pts.L, 'rgba(234, 88, 12, 0.4)', 1.5, true); // Ligne P-L
+            drawPoint(ex2_pts.P1, 'P', 'rgba(234, 88, 12, 0.5)', ex2_pts.P1.align);
+        }
+
+        const ex2_steps = [
+            {
+                text: "<strong>Objectif :</strong> Tracer la section du cube par le plan (IJK).",
+                draw: () => {
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                }
+            },
+            {
+                text: "1. On relie I à J car I & J ∈ même plan (ABFE).",
+                draw: () => {
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                }
+            },
+            {
+                text: "2. On prolonge la droite (IJ) avec la droite (BF) cela donne le point de percée P.",
+                draw: () => {
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawLine(ex2_pts.I, ex2_pts.P1, '#f59e0b', 2, true);
+                    drawLine({x:1, y:0, z:0}, ex2_pts.P1, '#94a3b8', 2, true); // Prolonge BF
+                    
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                    drawPoint(ex2_pts.P1, 'P', '#f59e0b', ex2_pts.P1.align);
+                }
+            },
+            {
+                text: "3. On relie P à K car P & K ∈ même plan (BCGF). La droite coupe [BC] en L.",
+                draw: () => {
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawLine(ex2_pts.I, ex2_pts.P1, '#f59e0b', 2, true);
+                    drawLine({x:1, y:0, z:0}, ex2_pts.P1, '#94a3b8', 2, true);
+                    
+                    drawLine(ex2_pts.P1, ex2_pts.L, '#f59e0b', 2, true); // P to L
+                    drawLine(ex2_pts.L, ex2_pts.K, '#e11d48', 3); // L to K (section)
+                    
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                    drawPoint(ex2_pts.P1, 'P', '#f59e0b', ex2_pts.P1.align);
+                    drawPoint(ex2_pts.L, 'L', '#10b981', ex2_pts.L.align);
+                }
+            },
+            {
+                text: "4. On relie I à L car I & L ∈ même plan (ABCD).",
+                draw: () => {
+                    drawConstructionsEx2();
+                    
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawLine(ex2_pts.L, ex2_pts.K, '#e11d48', 3);
+                    drawLine(ex2_pts.I, ex2_pts.L, '#e11d48', 3, true); // Base (caché)
+                    
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                    drawPoint(ex2_pts.L, 'L', '#10b981', ex2_pts.L.align);
+                }
+            },
+            {
+                text: "5. On trace la // à (LK) par J car plan (ADHE) // plan (BCGF) => (JM) qui coupe [EH] en M.",
+                draw: () => {
+                    drawConstructionsEx2();
+                    
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawLine(ex2_pts.L, ex2_pts.K, '#e11d48', 3);
+                    drawLine(ex2_pts.I, ex2_pts.L, '#e11d48', 3, true);
+                    drawLine(ex2_pts.J, ex2_pts.M, '#e11d48', 3, true);
+                    
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                    drawPoint(ex2_pts.L, 'L', '#10b981', ex2_pts.L.align);
+                    drawPoint(ex2_pts.M, 'M', '#8b5cf6', ex2_pts.M.align);
+                }
+            },
+            {
+                text: "6. On trace la // à (JI) par K car plan (DCGH) // plan (ABFE) => (KN) qui coupe [GH] en N.",
+                draw: () => {
+                    drawConstructionsEx2();
+                    
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawLine(ex2_pts.L, ex2_pts.K, '#e11d48', 3);
+                    drawLine(ex2_pts.I, ex2_pts.L, '#e11d48', 3, true);
+                    drawLine(ex2_pts.J, ex2_pts.M, '#e11d48', 3, true);
+                    drawLine(ex2_pts.K, ex2_pts.N, '#e11d48', 3, true);
+                    
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                    drawPoint(ex2_pts.L, 'L', '#10b981', ex2_pts.L.align);
+                    drawPoint(ex2_pts.M, 'M', '#8b5cf6', ex2_pts.M.align);
+                    drawPoint(ex2_pts.N, 'N', '#8b5cf6', ex2_pts.N.align);
+                }
+            },
+            {
+                text: "7. On relie M à N car M & N ∈ même plan (EFGH).",
+                draw: () => {
+                    drawConstructionsEx2();
+                    
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawLine(ex2_pts.L, ex2_pts.K, '#e11d48', 3);
+                    drawLine(ex2_pts.I, ex2_pts.L, '#e11d48', 3, true);
+                    drawLine(ex2_pts.J, ex2_pts.M, '#e11d48', 3, true);
+                    drawLine(ex2_pts.K, ex2_pts.N, '#e11d48', 3, true);
+                    drawLine(ex2_pts.M, ex2_pts.N, '#e11d48', 3); // Face haut visible
+                    
+                    drawPoint(ex2_pts.I, 'I', '#2563eb', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#2563eb', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#2563eb', ex2_pts.K.align);
+                    drawPoint(ex2_pts.L, 'L', '#10b981', ex2_pts.L.align);
+                    drawPoint(ex2_pts.M, 'M', '#8b5cf6', ex2_pts.M.align);
+                    drawPoint(ex2_pts.N, 'N', '#8b5cf6', ex2_pts.N.align);
+                }
+            },
+            {
+                text: "<span class='text-emerald-400'>Terminé !</span> La section est l'hexagone I-L-K-N-M-J.",
+                draw: () => {
+                    drawConstructionsEx2();
+                    
+                    // Ordre pour le polygone : I, L, K, N, M, J
+                    drawPolygon([ex2_pts.I, ex2_pts.L, ex2_pts.K, ex2_pts.N, ex2_pts.M, ex2_pts.J], 'rgba(225, 29, 72, 0.25)');
+                    
+                    drawLine(ex2_pts.I, ex2_pts.J, '#e11d48', 3);
+                    drawLine(ex2_pts.L, ex2_pts.K, '#e11d48', 3);
+                    drawLine(ex2_pts.I, ex2_pts.L, '#e11d48', 3, true);
+                    drawLine(ex2_pts.J, ex2_pts.M, '#e11d48', 3, true);
+                    drawLine(ex2_pts.K, ex2_pts.N, '#e11d48', 3, true);
+                    drawLine(ex2_pts.M, ex2_pts.N, '#e11d48', 3);
+                    
+                    drawPoint(ex2_pts.I, 'I', '#e11d48', ex2_pts.I.align);
+                    drawPoint(ex2_pts.J, 'J', '#e11d48', ex2_pts.J.align);
+                    drawPoint(ex2_pts.K, 'K', '#e11d48', ex2_pts.K.align);
+                    drawPoint(ex2_pts.L, 'L', '#e11d48', ex2_pts.L.align);
+                    drawPoint(ex2_pts.M, 'M', '#e11d48', ex2_pts.M.align);
+                    drawPoint(ex2_pts.N, 'N', '#e11d48', ex2_pts.N.align);
+                }
+            }
+        ];
+
+        // --- 4. GESTION DE L'INTERFACE ---
+        
+        const examples = {
+            1: { title: "Exemple 1 : Section Pentagonale", steps: ex1_steps },
+            2: { title: "Exemple 2 : Section Hexagonale", steps: ex2_steps }
+        };
+
+        let currentExId = 1;
+        let currentStep = 0;
+        
+        const stepsContainer = document.getElementById('steps-container');
+        const stepIndicator = document.getElementById('step-indicator');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+
+        function switchExample(id) {
+            currentExId = id;
+            currentStep = 0;
+            
+            // UI Boutons
+            document.getElementById('btn-ex1').className = id === 1 
+                ? "flex-1 py-1.5 text-sm font-semibold rounded-md bg-indigo-600 text-white shadow transition-colors"
+                : "flex-1 py-1.5 text-sm font-semibold rounded-md bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors";
+            
+            document.getElementById('btn-ex2').className = id === 2
+                ? "flex-1 py-1.5 text-sm font-semibold rounded-md bg-indigo-600 text-white shadow transition-colors"
+                : "flex-1 py-1.5 text-sm font-semibold rounded-md bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors";
+
+            document.getElementById('example-title').innerText = examples[id].title;
+            
+            buildStepsUI();
+            adjustCamera();
+            render();
+        }
+
+        function buildStepsUI() {
+            stepsContainer.innerHTML = '';
+            const steps = examples[currentExId].steps;
+            
+            steps.forEach((step, index) => {
+                const div = document.createElement('div');
+                div.id = `step-card-${index}`;
+                div.className = `step-card p-3 rounded-lg border text-sm leading-relaxed ${index === 0 ? 'step-active text-white' : 'step-hidden'}`;
+                div.innerHTML = step.text;
+                stepsContainer.appendChild(div);
+            });
+        }
+
+        function adjustCamera() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            // Calcul de l'échelle selon la taille de l'écran
+            scale = Math.min(w / 4, h / 3.5); 
+            
+            if(currentExId === 1) {
+                // Pour l'exemple 1, le point P va très loin à droite (x=1.6)
+                offsetX = w * 0.25; 
+                offsetY = h * 0.70; 
+            } else if(currentExId === 2) {
+                // Pour l'exemple 2, la section descend très bas en Z (z = -0.9)
+                offsetX = w * 0.2; 
+                offsetY = h * 0.55; 
+            }
+        }
+
+        function render() {
+            clearCanvas();
+            drawCube();
+            
+            const steps = examples[currentExId].steps;
+            
+            // Mise à jour du dessin
+            steps[currentStep].draw();
+            
+            // Mise à jour UI latérale
+            steps.forEach((_, idx) => {
+                const card = document.getElementById(`step-card-${idx}`);
+                if (!card) return;
+                
+                if (idx === currentStep) {
+                    card.className = "step-card p-3 rounded-lg border text-sm leading-relaxed step-active text-white";
+                    // Scroll automatique vers l'étape active
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else if (idx < currentStep) {
+                    card.className = "step-card p-3 rounded-lg border text-sm leading-relaxed step-inactive text-slate-300";
+                } else {
+                    card.className = "step-card step-hidden";
+                }
+            });
+
+            stepIndicator.innerText = `${currentStep}/${steps.length - 1}`;
+            btnPrev.disabled = currentStep === 0;
+            
+            if (currentStep === steps.length - 1) {
+                btnNext.innerHTML = 'Recommencer ↺';
+                btnNext.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+                btnNext.classList.add('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-500/20');
+            } else {
+                btnNext.innerHTML = 'Suite &rarr;';
+                btnNext.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
+                btnNext.classList.remove('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-500/20');
+            }
+        }
+
+        function nextStep() {
+            const max = examples[currentExId].steps.length - 1;
+            if (currentStep < max) {
+                currentStep++;
+            } else {
+                currentStep = 0;
+            }
+            render();
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                render();
+            }
+        }
+
+        
+        window.addEventListener('resize', () => {
+            adjustCamera();
+            render();
+        });
+
+        // Démarrage
+        setTimeout(() => {
+            switchExample(1);
+        }, 100);
+
+    </script>
+</body>
+</html>
